@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Privacy Policy — airoom</title>
+  <meta name="description" content="What airoom collects (almost nothing), when, and why." />
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=20" />
+  <!-- analytics -->
+</head>
+<body>
+  <nav class="nav">
+    <div class="wrap nav__inner">
+      <a class="logo" href="/">
+        <svg width="26" height="26" viewBox="0 0 16 16" fill="none" shape-rendering="crispEdges" aria-hidden="true">
+          <rect x="7" y="0" width="2" height="2" fill="#5eead4"/>
+          <rect x="1" y="2" width="14" height="2" fill="#5eead4"/>
+          <rect x="1" y="4" width="2" height="10" fill="#5eead4"/>
+          <rect x="13" y="4" width="2" height="10" fill="#5eead4"/>
+          <rect x="1" y="12" width="5" height="2" fill="#5eead4"/>
+          <rect x="10" y="12" width="5" height="2" fill="#5eead4"/>
+          <rect x="4" y="6" width="3" height="3" fill="#5eead4"/>
+          <rect x="9" y="6" width="3" height="3" fill="#5b9dff"/>
+          <rect x="6" y="10" width="4" height="1" fill="#5eead4"/>
+        </svg>
+        <span>airoom<b>.dev</b></span>
+      </a>
+      <a class="btn btn--sm" href="/#get">Download</a>
+    </div>
+  </nav>
+
+  <main class="legal">
+    <div class="wrap">
+      <span class="eyebrow">Legal</span>
+      <h1>Privacy Policy</h1>
+      <p class="legal__date">Last updated: 27 October 2026</p>
+
+      <h2>1. Who we are</h2>
+      <p>airoom is a product of <strong>applyai OÜ</strong> ("we", "our", "us"), a company registered in
+         Estonia. airoom is a desktop application for macOS and Windows that shows your local
+         Claude&nbsp;Code sessions as a pixel-art office, and this policy covers both the app and the
+         airoom.dev website. Questions to <a href="mailto:hello@airoom.dev">hello@airoom.dev</a>.</p>
+
+      <h2>2. The short version</h2>
+      <p>airoom runs entirely on your machine. Your rooms, transcripts, prompts, code and everything your
+         agents say or do stay there and are never sent to us. The app has no account, no key and no
+         telemetry; the one request it makes on its own is an anonymous check every few hours for a
+         newer build (section 3.3). The website counts visits (3.1), the downloads come from GitHub
+         (3.2), and the only thing we ever store about you is an email address you give us for the
+         waitlist (3.4). This policy is mostly a list of those moments.</p>
+
+      <h2>3. What we collect, and when</h2>
+      <h3>3.1 Visiting airoom.dev</h3>
+      <ul>
+        <li>We use Google Analytics to count visits and see which pages matter. It sets cookies in
+            your browser and shares usage data — pages viewed, rough location derived from your IP,
+            browser and device type — with Google, subject to
+            <a href="https://policies.google.com/privacy" rel="noopener">Google's Privacy Policy</a>.
+            No other tracking scripts.</li>
+        <li>Our hosting provider keeps ordinary server request logs (IP address, requested path, time)
+            for security and operations.</li>
+        <li>The site loads its fonts from Google Fonts, so your browser makes a request to Google when
+            the page loads. That request is subject to
+            <a href="https://policies.google.com/privacy" rel="noopener">Google's Privacy Policy</a>.</li>
+      </ul>
+      <h3>3.2 Downloading the app</h3>
+      <ul>
+        <li>The download buttons send your browser to GitHub, where the installers are published as
+            releases. We ask for nothing — no email, no account. GitHub's own
+            <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">privacy statement</a>
+            covers that request.</li>
+      </ul>
+      <h3>3.3 Checking for updates</h3>
+      <ul>
+        <li>Shortly after it starts, and then every six hours, the app fetches a small public file from
+            airoom.dev that lists the current version and, occasionally, a short announcement, so it can
+            tell you when a new build is out. It is a plain request for a public file: no key, no email,
+            no device identifier and no version number travel with it. Our hosting provider logs it like
+            any other page view (see 3.1).</li>
+        <li>To switch it off, start airoom with <code>AIROOM_NO_UPDATE_CHECK=1</code> in your
+            environment. The app then never contacts airoom.dev on its own.</li>
+      </ul>
+      <h3>3.4 The waitlist</h3>
+      <ul>
+        <li>If you leave your email for the hosted team office, we store it together with the time you
+            joined, send you one email when it opens, and delete it when you ask or once that email has
+            gone out — whichever comes first. No list, no newsletter, no drip campaign.</li>
+      </ul>
+
+      <h2>4. What we never see</h2>
+      <p>Your projects, rooms, transcripts, chats with agents, approvals, code and files. All of it stays
+         on your machine. Your agents talk to Anthropic through your own Claude&nbsp;Code installation
+         under your own account — that traffic does not pass through us and is governed by
+         <a href="https://www.anthropic.com/legal/privacy" rel="noopener">Anthropic's Privacy Policy</a>.</p>
+
+      <h2>5. Services we rely on</h2>
+      <ul>
+        <li><strong>Railway</strong> — hosting for this website, and for the waitlist and its database.
+            <a href="https://railway.com/legal/privacy" rel="noopener">Privacy policy</a>.</li>
+        <li><strong>GitHub</strong> — the source code and the installers.
+            <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">Privacy statement</a>.</li>
+        <li><strong>Google Analytics</strong> — visit statistics for this website.
+            <a href="https://policies.google.com/privacy" rel="noopener">Privacy policy</a>.</li>
+      </ul>
+      <p>These providers process data on our behalf and under their own safeguards; we do not sell or
+         rent your personal information to anyone.</p>
+
+      <h2>6. How long we keep things</h2>
+      <ul>
+        <li>Waitlist entries: until the one email has gone out, or until you ask — whichever is first.</li>
+        <li>Server logs: short-lived and rotated by our hosting provider.</li>
+      </ul>
+
+      <h2>7. Your rights</h2>
+      <p>applyai OÜ is an EU company, so the GDPR applies to everyone we hold data about. You can ask us
+         to access, correct, export or delete your data, object to or restrict processing, and complain
+         to a supervisory authority (in Estonia, the Data Protection Inspectorate — or the authority
+         where you live). Our lawful bases are legitimate interest (visit statistics and keeping the
+         site running) and consent (the address you give us for the waitlist, which you can withdraw by
+         asking us to delete it). California residents: we do not sell personal information, yours
+         included.</p>
+      <p>To exercise any of these rights, email
+         <a href="mailto:hello@airoom.dev">hello@airoom.dev</a>.</p>
+
+      <h2>8. Children</h2>
+      <p>airoom is not directed at children under 13 and we do not knowingly collect their data.</p>
+
+      <h2>9. Changes</h2>
+      <p>If this policy changes we will post the new version here and update the date at the top. We will
+         not quietly start collecting more than this page says.</p>
+
+      <h2>10. Contact</h2>
+      <p class="legal__contact">applyai OÜ<br />Tallinn, Estonia<br />
+         <a href="mailto:hello@airoom.dev">hello@airoom.dev</a><br />
+         <a href="https://airoom.dev">https://airoom.dev</a></p>
+
+      <p class="legal__next"><a href="/terms">Read our Terms of Service →</a></p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <span>© 2026 applyai OÜ</span><span>·</span><a href="mailto:hello@airoom.dev">hello@airoom.dev</a><span>·</span><a href="/privacy">Privacy</a><span>·</span><a href="/terms">Terms</a>
+    </div>
+  </footer>
+</body>
+</html>

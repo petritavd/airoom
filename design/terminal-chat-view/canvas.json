@@ -1,0 +1,24 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 960, "h": 720, "title": "Terminal view — working" },
+    { "file": "Approval.dc.html", "x": 1060, "y": 0, "w": 960, "h": 720, "title": "Terminal view — approval" },
+    { "file": "Hybrid.dc.html", "x": 0, "y": 860, "w": 960, "h": 720, "title": "Alternate — hybrid composer" }
+  ],
+  "annotations": [
+    {
+      "id": "brief-summary",
+      "x": 0,
+      "y": -190,
+      "w": 340,
+      "text": "Terminal view — a second way to read the same chat, toggled by the new CHAT | TERM switch in the header band.\n\nWhat changes: the thread becomes one mono stream on the code-slab surface — user turns are prompt echoes, tool calls are dim audit lines, the composer folds into a live prompt + statusline.\n\nWhat stays airoom: the band, the pixel frame, room-accent trim, green=working / amber=needs-you, and the approval gate's anatomy.\n\nStatic mockups; the conversation is sample copy. Tweak chip above each frame previews the room accent."
+    },
+    {
+      "id": "hybrid-tradeoff",
+      "x": 1060,
+      "y": 900,
+      "w": 300,
+      "text": "Alternate: terminal thread, but today's composer kept.\n\nFor it: mode / model / attach stay discoverable, typing feels unchanged.\nAgainst it: two surface styles stacked — the pure prompt (main direction) commits harder to the terminal feel."
+    }
+  ],
+  "launch": { "view": "canvas" }
+}

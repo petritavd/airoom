@@ -1,0 +1,137 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&amp;display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #0b0e14;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    a { color: #7dd3fc; } a:hover { color: #a5e3ff; }
+    .mono { font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace; }
+    .chakra { font-family: 'Chakra Petch', ui-monospace, 'SF Mono', monospace; }
+    .trow { display: flex; align-items: flex-start; gap: 9px; min-width: 0; }
+    .tname { font-size: 11.5px; flex: none; }
+    .ttarget {
+      font-size: 11.5px; color: #7b8aa3; min-width: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .tico { flex: none; display: grid; place-items: center; width: 13px; padding-top: 3px; }
+    .techo-time { flex: none; font-size: 10.5px; color: #7b8aa3; padding-top: 3px; }
+    kbd {
+      font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 10px; border: 2px solid rgba(0, 0, 0, 0.35); border-radius: 0;
+      padding: 0 3px; margin-left: 5px; opacity: 0.7;
+    }
+    @keyframes gateIn { 50% { border-left-color: #fde68a; } }
+  </style>
+</helmet>
+
+<!-- TERMINAL VIEW at the approval moment: the gate keeps its exact reading-view
+     anatomy (amber rail, device shadows, same buttons) — only its type goes
+     mono. The prompt waits, dimmed, and send is parked. -->
+<div class="mono" style="width: 940px; height: 700px; margin: 6px; display: flex; flex-direction: column; background: #0d0d0d; border: 2px solid #05070b; box-shadow: inset 0 0 0 2px #2a3550, inset 0 3px 0 rgba(255, 255, 255, 0.07), inset 0 -3px 0 rgba(0, 0, 0, 0.5), 6px 6px 0 rgba(0, 0, 0, 0.5);">
+
+  <!-- header band — amber "your move" state -->
+  <header class="chakra" style="flex: none; display: flex; align-items: center; gap: 9px; height: 42px; padding: 0 8px 0 14px; background: #222b3f; border-bottom: 2px solid #2a3550;">
+    <span style="flex: none; width: 8px; height: 8px; background: #fbbf24; box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.55);"></span>
+    <h2 style="margin: 0; min-width: 0; font-weight: 600; font-size: 15px; letter-spacing: -0.1px; color: #e6ebf3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+      <span style="font-weight: 700; color: {{accent}}; margin-right: 8px;">Sudo</span>release checks
+    </h2>
+    <span style="flex: none; font-size: 11px; letter-spacing: 0.8px; text-transform: uppercase; color: #fbbf24;">your move</span>
+    <span style="flex: 1;"></span>
+    <div style="display: flex; flex: none;">
+      <button style="font-family: inherit; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 12px; background: #141a25; color: #8494ad; border: 2px solid #05070b; cursor: pointer;">chat</button>
+      <button style="font-family: inherit; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 12px; background: #16324f; color: #cfe3ff; border: 2px solid #05070b; border-left: none; box-shadow: inset 0 0 0 1px #3d4a6b; cursor: pointer;">term</button>
+    </div>
+    <span class="mono" style="flex: none; display: inline-flex; align-items: center; height: 20px; padding: 2px 7px; border: 2px solid color-mix(in srgb, {{accent}} 45%, transparent); border-radius: 4px; background: rgba(0, 0, 0, 0.2); font-size: 10.5px; color: {{accent}}; white-space: nowrap;">airoom</span>
+    <button style="flex: none; width: 28px; height: 26px; display: grid; place-items: center; background: none; border: none; border-radius: 5px; color: #7b8aa3; cursor: pointer;" title="Continue in Claude Code">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="2.5" width="13" height="11" rx="2"></rect><path d="M4.5 6.5 6.5 8l-2 1.5M8.5 10h3"></path></svg>
+    </button>
+    <button style="flex: none; width: 28px; height: 26px; display: grid; place-items: center; background: none; border: none; border-radius: 5px; color: #7b8aa3; font-size: 14px; line-height: 1; cursor: pointer;">⋯</button>
+    <button style="flex: none; width: 28px; height: 26px; display: grid; place-items: center; background: none; border: none; border-radius: 5px; color: #7b8aa3; font-size: 14px; line-height: 1; cursor: pointer;">✕</button>
+  </header>
+
+  <!-- the terminal stream -->
+  <div style="flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding: 12px 20px 14px; background: #0c0f16; font-size: 12.5px; line-height: 1.55; color: #c3ccdb;">
+
+    <div style="text-align: center; font-size: 10.5px; letter-spacing: 0.4px; color: #7b8aa3; padding: 2px 0 4px;">start of this conversation</div>
+
+    <div class="trow" style="margin-top: 14px;">
+      <span style="flex: none; color: {{accent}}; font-weight: 700;">❯</span>
+      <div style="flex: 1; min-width: 0; color: #e6ebf3;">run the web tests before you push anything</div>
+      <time class="techo-time">11:02</time>
+    </div>
+
+    <div style="margin-top: 10px;">Checking what the test script actually is, then running it.</div>
+
+    <div style="margin: 10px 0 0 2px; border-left: 2px solid #202736; padding-left: 12px; display: flex; flex-direction: column; gap: 3px;">
+      <div class="trow" style="gap: 8px;">
+        <span style="color: #7b8aa3; font-size: 9px; width: 9px; padding-top: 4px;">▾</span>
+        <span style="font-size: 11.5px; color: #a9b6cb;">1 tool</span>
+        <span style="font-size: 11px; color: #7b8aa3;">· read · 2s</span>
+      </div>
+      <div class="trow" style="gap: 8px;">
+        <span class="tico" style="color: #6f93b5;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 1.5H4.5a1.5 1.5 0 0 0-1.5 1.5v10a1.5 1.5 0 0 0 1.5 1.5h7a1.5 1.5 0 0 0 1.5-1.5V5.5z"></path><path d="M9 1.5v4h4"></path></svg></span>
+        <span class="tname" style="color: #6f93b5;">Read</span>
+        <span class="ttarget">web/package.json</span>
+      </div>
+      <div style="margin-left: 21px; font-size: 11.5px; color: #7b8aa3;">└ scripts: dev · build · test — vitest, run mode</div>
+    </div>
+
+    <!-- the approval gate: identical anatomy to the reading view, mono type.
+         Amber stays the "needs you" colour; green stays "working". -->
+    <div style="margin-top: 14px; padding: 10px 12px; background: #141a25; border: 2px solid #202736; border-left: 3px solid #fbbf24; box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.06), inset 0 -2px 0 rgba(0, 0, 0, 0.45); animation: gateIn 1.5s ease-in-out 3;">
+      <div style="font-weight: 600; font-size: 10.5px; letter-spacing: 1.2px; text-transform: uppercase; color: #fbbf24;">needs your approval · bash</div>
+      <div style="margin-top: 4px; font-size: 12.5px; color: #e6ebf3;">Run the web test suite</div>
+      <div style="margin-top: 3px; font-size: 10.5px; color: #7b8aa3; overflow-wrap: anywhere;">in ~/dev/airoom/web</div>
+      <div style="margin: 8px 0 0; padding: 9px 11px; background: #0c0f16; border: 1px solid #202736; font-size: 12.5px; line-height: 1.5; color: #e6ebf3; white-space: pre-wrap; overflow-wrap: anywhere;">npm test -- --run</div>
+      <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
+        <button class="chakra" style="border: 2px solid #fbbf24; background: #fbbf24; color: #0f131c; padding: 7px 16px; font-weight: 600; font-size: 12.5px; letter-spacing: 0.5px; cursor: pointer;">Allow<kbd>⏎</kbd></button>
+        <button class="chakra" style="border: 2px solid rgba(251, 191, 36, 0.45); background: none; color: #fbbf24; padding: 7px 16px; font-weight: 600; font-size: 12.5px; letter-spacing: 0.5px; cursor: pointer;">Always allow</button>
+        <button class="chakra" style="border: 2px solid #2a3550; background: none; color: #a9b6cb; padding: 7px 16px; font-weight: 600; font-size: 12.5px; letter-spacing: 0.5px; cursor: pointer;">Deny &amp; stop<kbd>esc</kbd></button>
+        <button class="mono" style="margin-left: auto; background: none; border: none; color: #7b8aa3; font-weight: 400; font-size: 11px; padding: 6px 8px; cursor: pointer;">copy</button>
+      </div>
+    </div>
+
+    <!-- prompt parked while the gate holds the floor -->
+    <div class="trow" style="margin-top: 14px;">
+      <span style="flex: none; color: #3d4a6b; font-weight: 700;">❯</span>
+      <div style="flex: 1; min-width: 0; color: #4d5972;">reply lands after your call above…</div>
+    </div>
+  </div>
+
+  <!-- statusline — send parked, everything else at rest -->
+  <div style="flex: none; display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; background: #141a25; border-top: 2px solid #05070b; box-shadow: inset 0 2px 0 #191f2b;">
+    <button class="chakra" style="flex: none; height: 24px; padding: 0 9px; background: #141a25; color: #7b8aa3; border: 2px solid #05070b; box-shadow: inset 0 0 0 1px #202736; font-size: 11px; letter-spacing: 0.04em; cursor: pointer;">ask first</button>
+    <button class="chakra" style="flex: none; height: 24px; padding: 0 9px; background: #141a25; color: #7b8aa3; border: 2px solid #05070b; box-shadow: inset 0 0 0 1px #202736; font-size: 11px; letter-spacing: 0.04em; cursor: pointer;">Sonnet 5</button>
+    <span style="display: inline-flex; align-items: center; gap: 6px;">
+      <span style="display: inline-block; width: 64px; height: 6px; background: #202736; border-radius: 3px; overflow: hidden;"><span style="display: block; width: 12%; height: 100%; background: #7b8aa3;"></span></span>
+      <span class="mono" style="font-size: 10.5px; color: #7b8aa3;">12%</span>
+    </span>
+    <span style="flex: 1;"></span>
+    <button style="flex: none; display: grid; place-items: center; width: 24px; height: 24px; border: 2px solid #05070b; box-shadow: inset 0 0 0 1px #202736; background: #141a25; color: #7b8aa3; cursor: pointer;" title="Attach an image">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 1.5H4.5a1.5 1.5 0 0 0-1.5 1.5v10a1.5 1.5 0 0 0 1.5 1.5h7a1.5 1.5 0 0 0 1.5-1.5V5.5z"></path><path d="M8 8v4M6 10h4"></path></svg>
+    </button>
+    <button class="chakra" style="flex: none; border: 2px solid #202736; background: none; color: #7b8aa3; padding: 4px 12px; font-weight: 600; font-size: 11px; letter-spacing: 0.6px; text-transform: uppercase; cursor: default;">send</button>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#b0680f","options":["#b0680f","#2f7d4a","#2f6cad","#7247ab"],"section":"Room"},"$preview":{"width":960,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#b0680f' };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "version": "0.1.17",
+  "url": "https://airoom.dev/download",
+  "windows": {
+    "url": "https://airoom.dev/download?os=windows"
+  }
+}

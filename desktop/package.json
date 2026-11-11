@@ -1,0 +1,99 @@
+{
+  "name": "airoom-desktop",
+  "productName": "airoom",
+  "version": "0.1.17",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "airoom \u2014 a spatial control room for your Claude agents",
+  "author": "Petrit Avdyli <hello@airoom.dev>",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "icon": "./scripts/make-icon.sh",
+    "dist": "electron-builder --mac",
+    "dist:unsigned": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "build": {
+    "appId": "dev.airoom.app",
+    "productName": "airoom",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "build/tray-win.png"
+    ],
+    "extraResources": [
+      {
+        "from": "../server/dist",
+        "to": "server"
+      },
+      {
+        "from": "../web/dist",
+        "to": "web"
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "icon": "build/icon.icns",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "notarize": true,
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "dmg": {
+      "title": "airoom",
+      "contents": [
+        {
+          "x": 130,
+          "y": 190
+        },
+        {
+          "x": 410,
+          "y": 190,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ],
+      "format": "UDBZ"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "artifactName": "airoom-${version}-x64.${ext}"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "shortcutName": "airoom",
+      "deleteAppDataOnUninstall": false
+    },
+    "afterPack": "scripts/afterPack.js"
+  }
+}

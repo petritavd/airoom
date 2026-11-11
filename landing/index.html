@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>airoom: a control room for your Claude Code agents</title>
+  <meta name="description" content="airoom turns every project into a room and every Claude Code session into a robot at a desk. Watch your agents work, chat, approve tools, and hire new ones, all from one screen." />
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <meta property="og:title" content="airoom: a control room for your Claude Code agents" />
+  <meta property="og:description" content="Every project is a room. Every Claude session is a robot at a desk. See everything, steer anything." />
+  <meta property="og:url" content="https://airoom.dev" />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+  <!-- ?v= busts the server's 1h asset cache; bump it when style.css changes,
+       since the HTML itself is served no-cache. -->
+  <link rel="stylesheet" href="style.css?v=20" />
+  <!-- Reveal-on-scroll hides things until they scroll in. Only with JS running
+       may anything start hidden, so a page without it shows everything at once. -->
+  <script>document.documentElement.classList.add('js');</script>
+  <!-- analytics -->
+</head>
+<body>
+  <nav class="nav">
+    <div class="wrap nav__inner">
+      <a class="logo" href="#top">
+        <svg width="26" height="26" viewBox="0 0 16 16" fill="none" shape-rendering="crispEdges" aria-hidden="true">
+          <rect x="7" y="0" width="2" height="2" fill="#5eead4"/>
+          <rect x="1" y="2" width="14" height="2" fill="#5eead4"/>
+          <rect x="1" y="4" width="2" height="10" fill="#5eead4"/>
+          <rect x="13" y="4" width="2" height="10" fill="#5eead4"/>
+          <rect x="1" y="12" width="5" height="2" fill="#5eead4"/>
+          <rect x="10" y="12" width="5" height="2" fill="#5eead4"/>
+          <rect x="4" y="6" width="3" height="3" fill="#5eead4"/>
+          <rect x="9" y="6" width="3" height="3" fill="#5b9dff"/>
+          <rect x="6" y="10" width="4" height="1" fill="#5eead4"/>
+        </svg>
+        <span>airoom<b>.dev</b></span>
+      </a>
+      <span class="logo__by">a product of applyai OÜ</span>
+      <div class="nav__links">
+        <a href="#how">How it works</a>
+        <a href="#what">What you get</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <button class="btn btn--sm" type="button" data-dl>Download</button>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="wrap">
+      <span class="eyebrow" data-reveal>A control room for Claude Code</span>
+      <h1 data-reveal style="--d: .12s">Your Claude agents,<br />at their desks.</h1>
+      <p class="lead" data-reveal style="--d: .24s">
+        airoom turns every project into a room and every Claude Code session into a
+        robot at a desk. See what all of them are doing at a glance, drop into any
+        conversation, and approve what they want to run, from one screen.
+      </p>
+      <div class="cta" data-reveal style="--d: .36s">
+        <button class="btn" type="button" data-dl>Download for free</button>
+        <a class="btn btn--ghost" href="#how">See how it works</a>
+      </div>
+      <span class="cta__note" data-reveal style="--d: .48s">macOS and Windows · free and open source · no account, no key</span>
+
+      <div class="app" data-reveal style="--d: .6s">
+        <div class="app__bar">
+          <span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span>
+          <span class="app__t">airoom · live</span>
+          <span class="app__stats">
+            <span><b>9</b>ROOMS</span>
+            <span><b>14</b>AGENTS</span>
+            <span><b class="c-ok">6</b>WORKING</span>
+            <span><b class="c-warn">2</b>YOUR MOVE</span>
+            <span><b class="c-err">1</b>BLOCKED</span>
+          </span>
+        </div>
+        <div class="shot">
+          <div class="stage">
+            <picture>
+              <source media="(max-width: 700px)" srcset="img/office-narrow.svg?v=2" width="328" height="520" />
+              <img src="img/office-day.svg?v=3" width="1096" height="712"
+                   alt="Pixel-art open-plan office: project zones with robot agents at shared benches, each monitor lit with its agent's status colour" />
+            </picture>
+            <!-- Decorative dramatisation; every claim it makes is repeated as
+                 stable prose in the sections below. Anchors are percentages of
+                 the image box because the image scales under ~1096px. The nine
+                 covers sit exactly on the lit monitors (computed from the
+                 design modules) and lift one by one: the office boots. -->
+            <div class="play" aria-hidden="true">
+              <span class="cover" style="left:14.6%;top:23.6%;animation-delay:.2s"></span>
+              <span class="cover" style="left:43.34%;top:23.6%;animation-delay:.5s"></span>
+              <span class="cover" style="left:48.63%;top:23.6%;animation-delay:.8s"></span>
+              <span class="cover" style="left:53.92%;top:23.6%;animation-delay:1.1s"></span>
+              <span class="cover" style="left:78.1%;top:23.6%;animation-delay:1.4s"></span>
+              <span class="cover" style="left:17.24%;top:55.06%;animation-delay:1.7s"></span>
+              <span class="cover" style="left:14.6%;top:81.74%;animation-delay:2s"></span>
+              <span class="cover" style="left:43.34%;top:81.74%;animation-delay:2.3s"></span>
+              <span class="cover" style="left:48.63%;top:81.74%;animation-delay:2.6s"></span>
+              <div class="bub bub--1">Rate limiter's in. Running the ingest tests…</div>
+              <div class="bub bub--warn bub--2">Need your OK before I run <code>npm test</code></div>
+              <div class="bub bub--3">Handing this off to api/edge</div>
+              <div class="bub bub--ok bub--4">Done. 14 files, tests green.</div>
+              <div class="walker walker--a"><img src="img/walker-working.svg" width="22" height="32" alt="" /></div>
+              <div class="walker walker--b"><img src="img/walker-done.svg" width="22" height="32" alt="" /></div>
+              <div class="callout">
+                <span class="notif__i">
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" shape-rendering="crispEdges" aria-hidden="true"><rect x="7" y="0" width="2" height="2" fill="#5eead4"/><rect x="1" y="2" width="14" height="2" fill="#5eead4"/><rect x="1" y="4" width="2" height="10" fill="#5eead4"/><rect x="13" y="4" width="2" height="10" fill="#5eead4"/><rect x="1" y="12" width="5" height="2" fill="#5eead4"/><rect x="10" y="12" width="5" height="2" fill="#5eead4"/><rect x="4" y="6" width="3" height="3" fill="#5eead4"/><rect x="9" y="6" width="3" height="3" fill="#5b9dff"/><rect x="6" y="10" width="4" height="1" fill="#5eead4"/></svg>
+                </span>
+                <span class="callout__body">
+                  <b>Approval needed: billing-api</b>
+                  <span>Wants to run <code>npm test -- ingest</code></span>
+                  <span class="callout__acts"><span class="mini mini--ok">Allow</span><span class="mini mini--no">Deny</span></span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="how">
+      <div class="wrap">
+        <span class="eyebrow" data-reveal>How it works</span>
+        <h2 data-reveal style="--d: .1s">Three moves. No dashboard.</h2>
+        <p class="body body--lead" data-reveal style="--d: .2s">Nothing to configure and nothing to learn. If you can read a room, you can run this.</p>
+        <div class="moves">
+          <article class="move" data-reveal style="--d: .1s">
+            <span class="move__n">01</span>
+            <h3>Open a folder</h3>
+            <p>Any project becomes a room. Every Claude Code session in it appears as a robot at a desk, including the ones already on your disk.</p>
+            <div class="move__vis">
+              <span class="chip">+ project</span>
+              <div class="menu">
+                <div class="menu__row menu__row--on"><span>Browse for a folder…</span><span>Any folder becomes a room</span></div>
+                <div class="menu__row"><span>Choose from projects on this Mac…</span><span>Everything Claude Code has been used in</span></div>
+              </div>
+            </div>
+          </article>
+          <article class="move" data-reveal data-loop style="--d: .22s">
+            <span class="move__n">02</span>
+            <h3>Read the room</h3>
+            <p>Green is working, amber is waiting on you, red is blocked, dark is idle. Count what needs you from across the room.</p>
+            <div class="move__vis desks">
+              <figure><img class="desk" src="img/legend-working.svg?v=2" width="80" height="70" alt="Desk close-up: the monitor is green and scrolls code lines" style="animation-delay: 0s" /><figcaption class="c-ok">Working</figcaption></figure>
+              <figure><img class="desk" src="img/legend-waiting.svg?v=2" width="80" height="70" alt="Desk close-up: the monitor is amber and shows a prompt with a cursor block" style="animation-delay: .6s" /><figcaption class="c-warn">Your move</figcaption></figure>
+              <figure><img class="desk" src="img/legend-blocked.svg?v=2" width="80" height="70" alt="Desk close-up: the monitor is red and shows an exclamation mark" style="animation-delay: 1.2s" /><figcaption class="c-err">Blocked</figcaption></figure>
+              <figure><img src="img/legend-idle.svg?v=2" width="80" height="70" alt="Desk close-up: the monitor is dark" /><figcaption class="c-mute">Idle</figcaption></figure>
+            </div>
+          </article>
+          <article class="move" data-reveal data-loop style="--d: .34s">
+            <span class="move__n">03</span>
+            <h3>Step in</h3>
+            <p>Click a desk and the conversation opens. Allow or deny the exact command. Undecided requests auto-deny after ten minutes.</p>
+            <div class="move__vis tool apr">
+              <div class="tool__t">wants to run</div>
+              <code>npm test -- ingest</code>
+              <div class="tool__b"><span class="mini mini--ok apr__btn">Allow</span><span class="mini mini--no">Deny</span><span class="apr__ok c-ok">Allowed · running</span></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="what">
+      <div class="wrap">
+        <span class="eyebrow" data-reveal>What you get</span>
+        <h2 data-reveal style="--d: .1s">One screen for all of them.</h2>
+        <p class="body body--lead" data-reveal style="--d: .2s">Every room is a project. Every robot is a Claude Code session on your disk. Everything else is one click away.</p>
+        <div class="bento">
+          <article class="cell cell--wide" data-reveal data-loop style="--d: .1s">
+            <div class="cell__copy">
+              <span class="eyebrow">Teams</span>
+              <h3>Hire a team. Watch it hand off.</h3>
+              <p>One task, one rug, a team on it. The lead splits the work across the bench. Every handoff reads as a single line, and you choose how far the team may run alone. Every member is still a robot at a desk: click it and talk, even mid-task.</p>
+              <figure class="teamscene">
+                <img src="img/team-pod.svg" width="336" height="148"
+                     alt="Pixel-art team bench: three robot agents side by side with coloured role bars under their seats, next to a dashed empty desk marked with a plus" />
+                <figcaption>
+                  <span class="rdot rdot--lead"></span>lead
+                  <span class="rdot rdot--builder"></span>builder
+                  <span class="rdot rdot--reviewer"></span>reviewer
+                </figcaption>
+              </figure>
+            </div>
+            <div class="panel">
+              <div class="panel__h">
+                <span class="dot c-bg-warn"></span>
+                <b>billing-api · team</b><span>step by step</span>
+              </div>
+              <div class="handoffs">
+                <div class="ho ho--1"><span class="ho__who">you → lead</span><p>Ship the CSV export</p></div>
+                <div class="ho ho--2"><span class="ho__who">lead → builder</span><p>Take the writer first: <code>server/export.ts</code></p></div>
+                <div class="ho ho--3"><span class="ho__who">builder → lead</span><p>Done. 6 files, tests pass</p></div>
+                <div class="ho ho--4"><span class="ho__who">lead → reviewer</span><p>Read it. Mind the edge cases</p></div>
+                <div class="ho ho--5"><span class="ho__who">reviewer → lead</span><p>One real find: empty rows drop the header</p></div>
+              </div>
+              <div class="parked ho--6"><span>Next: builder fixes the header. Waiting on you.</span><span class="mini mini--ok glow">Continue</span></div>
+            </div>
+          </article>
+
+          <article class="cell" data-reveal style="--d: .22s">
+            <span class="eyebrow">Steer</span>
+            <h3>Jump in without switching windows.</h3>
+            <p>Click a desk and that conversation opens. Send a follow-up, queue a message while it works, or stop a run mid-flight.</p>
+            <div class="panel panel--chat">
+              <div class="msgs">
+                <div class="msg msg--you">add a rate limiter to the ingest endpoint</div>
+                <div class="msg msg--bot">Found the handler in <code>server/ingest.ts</code>. I'll add a token bucket keyed by API key, then run the tests.</div>
+              </div>
+              <div class="compose">Message this agent…<span class="compose__k">⌘↵</span></div>
+            </div>
+          </article>
+
+          <article class="cell" data-reveal style="--d: .1s">
+            <span class="eyebrow">Finds you</span>
+            <h3>It comes and finds you.</h3>
+            <p>When an agent needs a decision it walks to its door, the icon by your clock changes, and your system notifies you.</p>
+            <div class="osrow osrow--cell">
+              <div class="menubar"><span class="c-warn">⚠</span> 2 need you</div>
+              <div class="menubar"><span class="c-ok">▶</span> 6 working</div>
+              <div class="menubar"><span class="c-mute">⌂</span> calm</div>
+            </div>
+          </article>
+
+          <article class="cell" data-reveal style="--d: .22s">
+            <span class="eyebrow">Local-first</span>
+            <h3>Nothing leaves your machine.</h3>
+            <p>airoom reads your Claude Code sessions from your own disk and talks to a server that only listens on 127.0.0.1. Your code, prompts and transcripts never leave it.</p>
+            <div class="term">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+              listening on <span class="accent">127.0.0.1</span> only
+            </div>
+          </article>
+
+          <article class="cell" data-reveal style="--d: .34s">
+            <span class="eyebrow">Your Claude</span>
+            <h3>Runs as you.</h3>
+            <p>Agents run on your existing Claude subscription. airoom drives the Claude Code you already have installed and signed in.</p>
+            <div class="pills">
+              <span class="pill">needs Claude Code</span>
+              <span class="pill">your subscription</span>
+              <span class="pill">v0.1.17</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="after" class="section--dim">
+      <div class="wrap">
+        <span class="eyebrow" data-reveal>After hours</span>
+        <h2 data-reveal style="--d: .1s">They keep working.<br />It comes and finds you.</h2>
+        <p class="body body--lead" data-reveal style="--d: .2s">The office runs on your real clock: desks light the room after dark. When an
+           agent needs a decision it walks to its door, the icon by your clock changes, and your system
+           notifies you. Click the notification and you land in the right conversation.</p>
+        <div class="app app--after" data-reveal data-loop style="--d: .3s">
+          <div class="app__bar">
+            <span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span>
+            <span class="app__t">airoom · 23:40</span>
+          </div>
+          <div class="fade">
+            <picture class="fade__day">
+              <source media="(max-width: 700px)" srcset="img/office-narrow.svg?v=2" width="328" height="520" />
+              <img src="img/office-day.svg?v=3" width="1096" height="712" alt="The office by day" />
+            </picture>
+            <picture class="fade__night">
+              <source media="(max-width: 700px)" srcset="img/office-narrow-night.svg?v=2" width="328" height="520" />
+              <img src="img/office-night.svg?v=2" width="1096" height="712"
+                   alt="The same office at night: the floor is dark and lamp light pools over the benches that are still working" />
+            </picture>
+          </div>
+          <div class="osrow osrow--after">
+            <span class="chipstack">
+              <span class="menubar chip-day"><span class="c-ok">▶</span> 6 working</span>
+              <span class="menubar chip-night"><span class="c-warn">⚠</span> 2 need you</span>
+            </span>
+            <div class="notif notif-in">
+              <div class="notif__i">
+                <svg width="26" height="26" viewBox="0 0 16 16" fill="none" shape-rendering="crispEdges" aria-hidden="true">
+                  <rect x="7" y="0" width="2" height="2" fill="#5eead4"/>
+                  <rect x="1" y="2" width="14" height="2" fill="#5eead4"/>
+                  <rect x="1" y="4" width="2" height="10" fill="#5eead4"/>
+                  <rect x="13" y="4" width="2" height="10" fill="#5eead4"/>
+                  <rect x="1" y="12" width="5" height="2" fill="#5eead4"/>
+                  <rect x="10" y="12" width="5" height="2" fill="#5eead4"/>
+                  <rect x="4" y="6" width="3" height="3" fill="#5eead4"/>
+                  <rect x="9" y="6" width="3" height="3" fill="#5b9dff"/>
+                  <rect x="6" y="10" width="4" height="1" fill="#5eead4"/>
+                </svg>
+              </div>
+              <div><b>Approval needed: billing-api</b><p>Wants to run <code>npm test -- ingest</code></p></div>
+            </div>
+            <span class="osrow__note">The badge by your clock, and the notification that lands you in the right conversation.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="get">
+      <div class="wrap">
+        <span class="eyebrow" data-reveal>Get it</span>
+        <h2 data-reveal style="--d: .1s">Free and open source</h2>
+        <p class="body body--lead" data-reveal style="--d: .2s">Download and use everything, at home or at work: no account, no key, no
+           clock. The code is on <a href="https://github.com/petritavd/airoom" target="_blank" rel="noreferrer">GitHub</a> under Apache 2.0.
+           If airoom earns its place, <a href="https://github.com/sponsors/petritavd" target="_blank" rel="noreferrer">sponsor it</a>.</p>
+        <div class="get__cta" data-reveal style="--d: .3s">
+          <button class="btn" type="button" data-dl>Download airoom</button>
+          <a class="btn btn--ghost" href="https://github.com/petritavd/airoom" target="_blank" rel="noreferrer">Source on GitHub</a>
+        </div>
+        <div class="pills pills--center" data-reveal style="--d: .4s">
+          <span class="pill"><svg class="pill__logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>macOS 13+ · Apple Silicon · Certified by Apple</span>
+          <span class="pill"><svg class="pill__logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>Windows 11 · x64 · beta</span>
+        </div>
+        <p class="fine fine--center" data-reveal style="--d: .5s">v0.1.17 · needs <a href="https://claude.com/claude-code" target="_blank" rel="noreferrer">Claude Code</a> · Apache 2.0</p>
+        <div class="wait" id="hosted" data-reveal style="--d: .6s">
+          <p class="fine">Running airoom across a team? A hosted office that several machines report into is next, and it will be the paid part.</p>
+          <form class="wait__form" id="waitform" novalidate>
+            <label class="sr" for="wait-email">Your email</label>
+            <input class="wait__email" id="wait-email" type="email" required placeholder="you@company.com" autocomplete="email" />
+            <button class="btn btn--ghost" type="submit" id="wait-btn">Tell me when it opens</button>
+          </form>
+          <p class="fine" id="wait-note"></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq">
+      <div class="wrap wrap--narrow">
+        <h2 data-reveal>Questions</h2>
+        <div class="faq" data-reveal style="--d: .1s">
+          <details open>
+            <summary>Does it need Claude Code?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+            <p>Yes. airoom drives the Claude Code you already have, installed and signed in. Agents run as you, on your existing Claude subscription.</p>
+          </details>
+          <details>
+            <summary>Does anything leave my machine?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+            <p>No. airoom reads your sessions from your own disk and talks to a server that only listens on 127.0.0.1. Your code, prompts and transcripts never leave it.</p>
+          </details>
+          <details>
+            <summary>What does it cost?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+            <p>Nothing. airoom is open source under Apache 2.0 and free for anyone, at home or at work: no account, no key, no trial. If it earns its place, <a href="https://github.com/sponsors/petritavd" target="_blank" rel="noreferrer">sponsor it</a>.</p>
+          </details>
+          <details>
+            <summary>Can my team share one office?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+            <p>Not yet. Today every copy of airoom shows the sessions on its own machine. A hosted office that several people's machines report into is what comes next, and it will be the paid part — <a href="#hosted">leave your email</a> and you will get one message when it opens.</p>
+          </details>
+          <details>
+            <summary>Which machines does it run on?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+            <p>macOS 13 or newer on Apple Silicon, certified by Apple. Windows 11 on x64 is a beta: Windows may say the publisher is unknown while our certificate is pending.</p>
+          </details>
+          <details>
+            <summary>What if I walk away from an approval?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+            <p>Undecided requests auto-deny after ten minutes, so nothing runs because you stepped out.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- The download chooser: one dialog, two installers. Both links go to
+       /download, which serves a bundled file when there is one and otherwise
+       sends the browser to the latest GitHub release. -->
+  <dialog class="dl" id="dl" aria-labelledby="dl-title">
+    <div class="dl__box">
+      <form method="dialog"><button class="dl__close" type="submit" aria-label="Close">×</button></form>
+      <div class="dl__head">
+        <span class="eyebrow">Download</span>
+        <h2 id="dl-title">Pick your machine</h2>
+        <p class="fine">Free and open source · v0.1.17</p>
+      </div>
+      <div class="dl__opts">
+        <div class="dl__opt">
+          <span class="dl__os"><svg class="dl__logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>macOS</span>
+          <span class="dl__spec">Apple Silicon · macOS 13 or newer</span>
+          <a class="btn" href="/download">Download for macOS</a>
+          <span class="dl__ok"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Certified by Apple</span>
+        </div>
+        <div class="dl__opt">
+          <span class="dl__os"><svg class="dl__logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>Windows</span>
+          <span class="dl__spec">Windows 11 · x64 · beta</span>
+          <a class="btn" href="/download?os=windows">Download for Windows</a>
+          <p class="fine">Windows may say the publisher is unknown while our certificate is pending.
+             Choose “More info”, then “Run anyway”.</p>
+        </div>
+      </div>
+      <p class="dl__foot fine">Both need <a href="https://claude.com/claude-code" target="_blank" rel="noreferrer">Claude Code</a> installed and signed in. Every build is also on <a href="https://github.com/petritavd/airoom/releases" target="_blank" rel="noreferrer">GitHub Releases</a>.</p>
+    </div>
+  </dialog>
+  <script>
+    const dl = document.getElementById('dl');
+    const openChooser = () => {
+      dl.showModal();
+      dl.querySelector('.dl__opt .btn').focus();
+    };
+    for (const b of document.querySelectorAll('[data-dl]')) b.addEventListener('click', openChooser);
+    // A click on the backdrop lands on the dialog element itself, never on
+    // the box inside it, so this closes on backdrop and nowhere else.
+    dl.addEventListener('click', (e) => { if (e.target === dl) dl.close(); });
+
+    // The teams waitlist. The server says whether there is somewhere to send
+    // it (body[data-waitlist]); without one, the form is an email address.
+    const wait = document.getElementById('waitform');
+    const waitNote = document.getElementById('wait-note');
+    if (document.body.dataset.waitlist !== 'form') {
+      wait.hidden = true;
+      waitNote.innerHTML = 'Email <a href="mailto:hello@airoom.dev?subject=airoom%20for%20teams">hello@airoom.dev</a> and you will hear when it opens.';
+    }
+    wait.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const field = document.getElementById('wait-email');
+      const v = field.value.trim();
+      if (!field.checkValidity() || !v.includes('@')) {
+        field.reportValidity();
+        field.focus();
+        return;
+      }
+      const btn = document.getElementById('wait-btn');
+      btn.style.minWidth = btn.getBoundingClientRect().width + 'px';
+      btn.disabled = true;
+      btn.textContent = 'Joining…';
+      try {
+        const r = await fetch('/waitlist', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ email: v, platform: 'teams' }),
+        });
+        if (!r.ok) throw new Error('not recorded');
+        btn.textContent = 'On the list ✓';
+        waitNote.textContent = 'One email when it opens. Nothing else.';
+      } catch (_) {
+        btn.disabled = false;
+        btn.textContent = 'Tell me when it opens';
+        waitNote.textContent = "That didn't go through. Email hello@airoom.dev and we'll add you by hand.";
+      }
+    });
+
+    // Things arrive as they scroll in, once; the looping mocks start then too.
+    // Without the observer everything is simply shown.
+    const targets = document.querySelectorAll('[data-reveal], [data-loop]');
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        for (const en of entries) {
+          if (!en.isIntersecting) continue;
+          en.target.classList.add('in');
+          io.unobserve(en.target);
+        }
+      }, { rootMargin: '0px 0px -8% 0px' });
+      for (const el of targets) io.observe(el);
+    } else {
+      for (const el of targets) el.classList.add('in');
+    }
+  </script>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <span class="footer__c">© 2026 applyai OÜ</span><span class="sep">·</span><a href="mailto:hello@airoom.dev">hello@airoom.dev</a><span>·</span><a href="/privacy">Privacy</a><span>·</span><a href="/terms">Terms</a>
+    </div>
+  </footer>
+</body>
+</html>

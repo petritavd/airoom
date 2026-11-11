@@ -1,0 +1,188 @@
+/* ============================================================================
+   airoom — the hire form and the team panel on the graphite chrome.
+   Loaded after shell.css. Three questions, then Customize; flat surfaces, one
+   pixel lines, the teal accent for whatever is chosen. No gradients.
+   ========================================================================= */
+
+/* The questions are answered in this order, whatever order the DOM keeps them
+   in (the crew and model sections stay mounted so a half-edited crew survives
+   a closed Customize). */
+.ht__col {
+  display: flex;
+  flex-direction: column;
+}
+.ht__q--goal { order: 1; }
+.ht__q--where { order: 2; }
+.ht__q--auto { order: 3; }
+.ht__q--custom { order: 4; }
+.ht__q--crew { order: 5; }
+.ht__q--model { order: 6; }
+.ht__q[hidden] { display: none; }
+
+.ht__q {
+  margin-bottom: 8px;
+  padding: 12px 14px 13px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: none;
+}
+.ht__label { color: var(--text-dim); }
+.ht__task {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: none;
+  color: var(--text);
+}
+.ht__task:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+.ht__task::placeholder { color: var(--text-mute); }
+.ht__hint,
+.ht__fact,
+.ht__thrift { color: var(--text-dim); }
+
+/* One answer per card; the chosen one wears the accent. */
+.ht__opt,
+.ht__who,
+.ht__add {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: none;
+  color: var(--text-dim);
+}
+.ht__opt:hover:not(:disabled),
+.ht__who:hover,
+.ht__add:hover { background: var(--raised, #1f2838); }
+.ht__opt--on,
+.ht__who--on {
+  background: #1b3532;
+  border-color: var(--accent);
+  box-shadow: none;
+}
+.ht__opt--on .ht__optName { color: var(--text); }
+.ht__opt--on .ht__optSub { color: #8fd9cb; }
+.ht__optName,
+.ht__whoName { color: var(--text); }
+.ht__optSub,
+.ht__whoDoes { color: var(--text-mute); }
+.ht__segBtn {
+  border-radius: 6px;
+}
+.ht__segBtn--on {
+  background: #1b3532;
+  box-shadow: inset 0 0 0 1px var(--accent);
+  color: var(--text);
+}
+.ht__preset,
+.ht__name,
+.ht__note,
+.ht__num,
+.ht__rolePick {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  box-shadow: none;
+  color: var(--text);
+}
+.ht__preset:hover { background: var(--panel); color: var(--text); }
+.ht__preset[aria-expanded='true'] {
+  background: #1b3532;
+  border-color: var(--accent);
+  box-shadow: none;
+  color: var(--text);
+}
+.ht__num:focus,
+.ht__name:focus,
+.ht__note:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.ht__edit {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.ht__thrift input { accent-color: var(--accent); }
+.ht__thrift b,
+.ht__summary b { color: var(--text); }
+
+/* Customize: one row that says what it holds while it is closed. */
+.ht__q--custom { padding: 0; }
+.ht__disclose {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 14px;
+  border: 0;
+  background: none;
+  color: var(--text-dim);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 10px;
+}
+.ht__disclose:hover { color: var(--text); }
+.ht__disclose:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.ht__discloseArrow {
+  display: inline-block;
+  width: 12px;
+  color: var(--text-mute);
+  transition: transform 120ms ease-out;
+}
+.ht__discloseArrow--open { transform: rotate(90deg); }
+.ht__discloseLabel {
+  font-family: var(--font-display);
+  font-size: 11.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  flex: none;
+}
+.ht__discloseSum {
+  min-width: 0;
+  font-size: 12.5px;
+  color: var(--text-mute);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ht__discloseArrow { transition: none; }
+}
+
+/* The whole thing said back, and the one button. */
+.ht__foot {
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+  box-shadow: none;
+}
+.ht__summary { color: var(--text-dim); font-size: 12.5px; }
+.ht__go {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  box-shadow: none;
+  color: var(--accent-ink);
+}
+.ht__go:not(:disabled):hover { background: #7ff3e0; border-color: #7ff3e0; }
+.ht__go:not(:disabled):active { transform: translateY(1px); box-shadow: none; }
+.ht__go:disabled { box-shadow: none; }
+.ht__why { color: var(--warn); }
+
+/* ---- the team panel, same chrome ---- */
+.tp__head {
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--line);
+  box-shadow: none;
+}
+.tp__nameIn {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}

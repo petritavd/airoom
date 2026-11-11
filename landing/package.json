@@ -1,0 +1,14 @@
+{
+  "name": "airoom-landing",
+  "version": "1.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "airoom.dev landing page — static site + dmg download, zero dependencies",
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

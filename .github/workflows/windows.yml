@@ -1,0 +1,79 @@
+# airoom on Windows, checked by a machine that is actually Windows.
+#
+# Nobody here owns a Windows box. This runner is where the server suite meets
+# real backslashes and a real Git for Windows, and where the installer is
+# built. Its artifact is what goes to the beta list.
+name: windows
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# A release tag writes the installer onto its release; everything else only reads.
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Three packages, three lockfiles — there are no workspaces.
+      - run: npm ci
+        working-directory: server
+      - run: npm ci
+        working-directory: web
+      - run: npm ci
+        working-directory: desktop
+
+      - name: typecheck server
+        run: npx tsc --noEmit
+        working-directory: server
+      - name: typecheck web
+        run: npx tsc --noEmit
+        working-directory: web
+
+      # The whole suite, including the lane tests that drive real git. This is
+      # the audit that no amount of reading the code on a Mac can replace.
+      - name: server tests
+        run: npm test
+        working-directory: server
+
+      - name: build web
+        run: npm run build
+        working-directory: web
+      - name: build server
+        run: npm run build
+        working-directory: server
+
+      - name: package installer
+        run: npx electron-builder --win nsis --x64 --publish never
+        working-directory: desktop
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: airoom-windows-x64
+          path: desktop/release/*.exe
+          if-no-files-found: error
+
+      # A release tag (v0.1.17) attaches the installer to that release under a
+      # stable name, so airoom.dev/download?os=windows can always send people
+      # to releases/latest/download/airoom-x64.exe.
+      - name: name the installer for the release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: cp desktop/release/airoom-*-x64.exe airoom-x64.exe
+      - uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          files: airoom-x64.exe

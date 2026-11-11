@@ -1,0 +1,14 @@
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+  <!-- airoom mark: a robot face and a room at once. Integer rects on a 16x16
+       grid — no curves, no gradients. Outline = head and four walls; the gap in
+       the base = chin and doorway; the blocks = eyes and two occupied desks. -->
+  <rect x="7" y="0" width="2" height="2" fill="#5eead4"/>
+  <rect x="1" y="2" width="14" height="2" fill="#5eead4"/>
+  <rect x="1" y="4" width="2" height="10" fill="#5eead4"/>
+  <rect x="13" y="4" width="2" height="10" fill="#5eead4"/>
+  <rect x="1" y="12" width="5" height="2" fill="#5eead4"/>
+  <rect x="10" y="12" width="5" height="2" fill="#5eead4"/>
+  <rect x="4" y="6" width="3" height="3" fill="#5eead4"/>
+  <rect x="9" y="6" width="3" height="3" fill="#5b9dff"/>
+  <rect x="6" y="10" width="4" height="1" fill="#5eead4"/>
+</svg>
