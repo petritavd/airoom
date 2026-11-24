@@ -388,6 +388,11 @@ export type ServerMessage =
   | { v: 1; type: 'connectors'; room: RoomConnectors }
   // Answer to 'playbookDraft': what airoom read out of the session, unsaved.
   | { v: 1; type: 'playbookDraft'; sessionId: string; draft?: Playbook; error?: string }
+  // Answer to 'teamPlaybooks': the rooms that have somewhere to share to, and
+  // the team's cards for them that this machine does not have.
+  | { v: 1; type: 'teamPlaybooks'; rooms: string[]; items: TeamPlaybook[]; error?: string }
+  // Answer to 'teamPlaybookGet': a teammate's card as an unsaved proposal.
+  | { v: 1; type: 'teamPlaybookDraft'; docId: string; draft?: Playbook; error?: string }
   // One browser command, sent ONLY to the socket that announced itself as the
   // pane's host (the desktop shell). Answered with 'browserResult'.
   | { v: 1; type: 'browserCmd'; id: string; action: BrowserAction; args: Record<string, unknown>; driver: BrowserDriver }
@@ -571,6 +576,14 @@ export type ClientMessage =
   | { v: 1; type: 'playbookDropRule'; id: string; ruleId: string }
   /** Stop a run's session; the run is marked stopped. */
   | { v: 1; type: 'playbookStop'; id: string; runId: string }
+  /** Copy a playbook to the team's Cognivio, through the connector its room
+   *  already has. Answered with a notice. */
+  | { v: 1; type: 'playbookShare'; id: string }
+  /** The team's playbooks for these rooms. Answered with 'teamPlaybooks'. */
+  | { v: 1; type: 'teamPlaybooks'; roomIds: string[] }
+  /** Read one of them. Answered with 'teamPlaybookDraft'; nothing is saved
+   *  until the client sends the card back with 'playbookSave'. */
+  | { v: 1; type: 'teamPlaybookGet'; roomId: string; docId: string }
   /** What connectors (MCP servers) agents in this room have, and their health.
    *  Cached; `refresh` asks the runtime again. Answered with 'connectors'. */
   | { v: 1; type: 'listConnectors'; roomId: string; refresh?: boolean }
@@ -733,6 +746,15 @@ export interface Playbook {
   updatedAt: string;
   /** Newest last. Kept to a handful. */
   runs: PlaybookRun[];
+}
+
+/** A playbook a teammate shared for a project this machine has a room for. */
+export interface TeamPlaybook {
+  roomId: string; // the room it would be saved into
+  docId: string; // the document that holds it, on the room's Cognivio
+  name: string;
+  team: string;
+  updatedAt?: string; // ISO
 }
 
 /** How many runs a playbook remembers. */

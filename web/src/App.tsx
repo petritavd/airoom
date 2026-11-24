@@ -162,6 +162,12 @@ export default function App() {
     addPlaybookRule,
     dropPlaybookRule,
     stopPlaybookRun,
+    teamPlaybooks,
+    teamDraft,
+    sharePlaybook,
+    requestTeamPlaybooks,
+    getTeamPlaybook,
+    clearTeamDraft,
     browserAgents,
     chromeCheck,
     setBrowserAgents,
@@ -375,6 +381,22 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playbookDrafts, draftFor, clearPlaybookDraft]);
   const reading = !!draftFor && !!playbookDrafts[draftFor.sessionId]?.loading;
+  // Sharing with a team. The library asks once each time it opens: which
+  // rooms have a Cognivio connector, and what the team has shared for them.
+  // A machine with no such connector gets two empty lists and no request
+  // leaves it.
+  const roomIdsKey = snapshot?.rooms.map((r) => r.id).join('\n') ?? '';
+  useEffect(() => {
+    if (playbooksOpen && conn === 'open' && roomIdsKey) requestTeamPlaybooks(roomIdsKey.split('\n'));
+  }, [playbooksOpen, conn, roomIdsKey, requestTeamPlaybooks]);
+  useEffect(() => {
+    if (!teamDraft || teamDraft.loading) return;
+    if (teamDraft.draft) setEditor({ draft: teamDraft.draft });
+    else raise(teamDraft.error ?? 'That playbook could not be read.', true);
+    clearTeamDraft();
+    // raise closes over setters only
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [teamDraft, clearTeamDraft]);
   /** Jump to anything: ⌘K, or Ctrl+K where there is no ⌘. ⌘J opens the
    *  Needs-you list. Both stay out of text fields' way: a field that wants
    *  those keys keeps them by stopping the event. */
@@ -1431,6 +1453,14 @@ export default function App() {
             }}
             onStop={stopPlaybookRun}
             onDropRule={dropPlaybookRule}
+            team={teamPlaybooks}
+            fetchingDocId={teamDraft?.loading ? teamDraft.docId : null}
+            onShare={(id) => {
+              if (!sharePlaybook(id)) raise('Not connected — try again in a moment.', true);
+            }}
+            onGet={(item) => {
+              if (!getTeamPlaybook(item.roomId, item.docId)) raise('Not connected — try again in a moment.', true);
+            }}
             onOpenAgent={(sessionId) => {
               setPlaybooksOpen(false);
               setSelectedId(sessionId);

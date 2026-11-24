@@ -18,7 +18,9 @@ already writes to `~/.claude/projects`, drives agents through the Claude Agent
 SDK with your own login, and binds to 127.0.0.1 only. It sends no telemetry.
 Apart from Claude's own traffic to Anthropic, and the pages you or your agents
 open in the browser pane, its only outbound request is a version check against
-`airoom.dev/release.json`.
+`airoom.dev/release.json`. The one exception is opt-in: a room that already
+has a Cognivio connector can [share playbooks with a team](#sharing-a-playbook-with-your-team)
+through it.
 
 ## Get it
 
@@ -160,6 +162,38 @@ last run". A run ends when the agent finishes with the line
 `~/.airoom/playbooks.json`; runs are ordinary sessions (a lavender card on the
 desk marks them). `server/src/playbook/` holds the rules, the extraction and
 the controller; `scripts/playbook-test.ts` proves them without a model.
+
+### Sharing a playbook with your team
+
+A playbook is a file on one machine. If a room has a
+[Cognivio](https://github.com/Elbani/cognivio) connector (a team knowledge
+base agents read over MCP, hosted or self-hosted), its cards get a **share**
+button. Share copies the card to the team as a document, and the Playbooks
+list on a teammate's machine shows it under **From your team** for the same
+project. **Get** opens it in the editor as a proposal; it is theirs once they
+save it.
+
+- **No settings.** The address and the key are the ones in the room's own
+  Cognivio connector (`.mcp.json` or `~/.claude.json`), so airoom talks only
+  to a server that room's agents already talk to. A room without the
+  connector shows no button and makes no request.
+- **When it calls.** Opening the Playbooks list asks what the team has;
+  share and Get call on the click. Nothing runs in the background.
+- **Only the card travels:** name, goal, inputs, rules, steps, checks, what
+  to deliver, the allowlist, and what the first session cost. Runs, session
+  ids, transcripts, the permission mode and the model stay behind.
+- **A teammate's card is untrusted.** Its allowlist passes the same check as
+  an edited card (nothing for `rm`, `sudo` or a bare `Bash`), and the editor
+  shows every rule and every allowed call before anything is saved.
+- **One copy per name.** Sharing again after an edit updates the shared
+  document. A saved card does not follow later changes; a card whose name
+  you already have in that room is not offered again.
+
+A project is matched by its folder name, which is the same on every machine
+that cloned it. A key that reaches several Cognivio teams shares to the one
+named after the project. `server/src/playbook/share.ts` holds it all;
+`scripts/playbook-share-test.ts` proves it against a stand-in server on
+127.0.0.1.
 
 ## Connections (the sockets on the wall)
 
@@ -306,6 +340,7 @@ server/src/datasource/               DataSource (read seam); LocalClaudeDataSour
 server/src/parse/sessionParser.ts    JSONL → session model, one record at a time
 server/src/agent/                    AgentController (write seam); SdkClaudeController (Agent SDK),
                                      claudeBin (finding claude)
+server/src/playbook/                 playbooks: rules, extraction, the controller, sharing with a team
 server/src/team/                     TeamController + worktrees: a lead, a crew, one lane each
 server/src/browser/                  the browser pane's server half: relay to the shell, site policy, tools
 server/src/release.ts                the version check

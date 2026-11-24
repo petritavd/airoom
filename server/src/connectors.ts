@@ -119,6 +119,12 @@ export function sharedLoaded(cwd: string, name: string): boolean {
   return !readJson<ClaudeJson>(CLAUDE_JSON)?.projects?.[cwd]?.disabledMcpServers?.includes(name);
 }
 
+/** Servers the person added for this project only (`claude mcp add` with the
+ *  default scope), which Claude Code keeps under the project in ~/.claude.json. */
+export function localServers(cwd: string): Record<string, Record<string, unknown>> {
+  return readJson<ClaudeJson>(CLAUDE_JSON)?.projects?.[cwd]?.mcpServers ?? {};
+}
+
 /** User-wide servers declared in ~/.claude.json, by name. */
 export function userServers(): Record<string, Record<string, unknown>> {
   return readJson<ClaudeJson>(CLAUDE_JSON)?.mcpServers ?? {};

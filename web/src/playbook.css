@@ -323,6 +323,9 @@
   padding: 4px 0;
 }
 .pbp__rowMain:hover .pbp__rowName { color: var(--pb); }
+.pbp__rowMain--still { cursor: default; }
+.pbp__rowMain--still:hover .pbp__rowName { color: var(--text); }
+.pbp__hint--pad { padding: 8px 12px; }
 .pbp__rowName { font-weight: 600; font-size: 13.5px; }
 .pbp__rowSub { font-size: 11.5px; color: var(--text-mute); }
 

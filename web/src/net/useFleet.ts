@@ -11,6 +11,7 @@ import type {
   ModelChoice,
   PermissionMode,
   Playbook,
+  TeamPlaybook,
   RoleNotes,
   RoomConnectors,
   RosterMember,
@@ -154,6 +155,11 @@ export function useFleet() {
   const [playbookDrafts, setPlaybookDrafts] = useState<
     Record<string, { loading: boolean; draft?: Playbook; error?: string }>
   >({});
+  /** Sharing with a team: the rooms that have a Cognivio connector, and the
+   *  team's playbooks for them. Empty until the playbooks panel asks. */
+  const [teamPlaybooks, setTeamPlaybooks] = useState<{ rooms: string[]; items: TeamPlaybook[]; error?: string }>({ rooms: [], items: [] });
+  /** A teammate's card being fetched, then its answer. */
+  const [teamDraft, setTeamDraft] = useState<{ docId: string; loading: boolean; draft?: Playbook; error?: string } | null>(null);
   /** Each room's connectors, as last reported. */
   const [connectors, setConnectors] = useState<Record<string, RoomConnectors>>({});
   /** The newest connector tool call — the render layer's cable pulse. */
@@ -388,6 +394,10 @@ export function useFleet() {
         setPlaybooks(msg.playbooks);
       } else if (msg.type === 'playbookDraft') {
         setPlaybookDrafts((prev) => ({ ...prev, [msg.sessionId]: { loading: false, draft: msg.draft, error: msg.error } }));
+      } else if (msg.type === 'teamPlaybooks') {
+        setTeamPlaybooks({ rooms: msg.rooms, items: msg.items, error: msg.error });
+      } else if (msg.type === 'teamPlaybookDraft') {
+        setTeamDraft({ docId: msg.docId, loading: false, draft: msg.draft, error: msg.error });
       } else if (msg.type === 'connectors') {
         setConnectors((prev) => ({ ...prev, [msg.room.roomId]: msg.room }));
       } else if (msg.type === 'browserSettings') {
@@ -754,6 +764,17 @@ export function useFleet() {
   );
   const dropPlaybookRule = useCallback((id: string, ruleId: string) => wsSend({ v: 1, type: 'playbookDropRule', id, ruleId }), [wsSend]);
   const stopPlaybookRun = useCallback((id: string, runId: string) => wsSend({ v: 1, type: 'playbookStop', id, runId }), [wsSend]);
+  const sharePlaybook = useCallback((id: string) => wsSend({ v: 1, type: 'playbookShare', id }), [wsSend]);
+  const requestTeamPlaybooks = useCallback((roomIds: string[]) => wsSend({ v: 1, type: 'teamPlaybooks', roomIds }), [wsSend]);
+  const getTeamPlaybook = useCallback(
+    (roomId: string, docId: string) => {
+      if (!wsSend({ v: 1, type: 'teamPlaybookGet', roomId, docId })) return false;
+      setTeamDraft({ docId, loading: true });
+      return true;
+    },
+    [wsSend],
+  );
+  const clearTeamDraft = useCallback(() => setTeamDraft(null), []);
 
   // ---- connectors ----
   const listConnectors = useCallback(
@@ -802,6 +823,12 @@ export function useFleet() {
     addPlaybookRule,
     dropPlaybookRule,
     stopPlaybookRun,
+    teamPlaybooks,
+    teamDraft,
+    sharePlaybook,
+    requestTeamPlaybooks,
+    getTeamPlaybook,
+    clearTeamDraft,
     snapshot,
     conn,
     transcript,

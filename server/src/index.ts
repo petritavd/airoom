@@ -24,6 +24,7 @@ import { FALLBACK_MODELS } from '../../shared/types';
 import { releaseState, startReleaseChecks } from './release';
 import { TeamController } from './team/TeamController';
 import { PlaybookController } from './playbook/PlaybookController';
+import { getTeamCard, shareCard, teamCards } from './playbook/share';
 import { addProjectServer, ConnectorsService, removeProjectServer, setAdopted, setProjectChoice, setSharedLoaded, sharedLoaded } from './connectors';
 import { gitFacts } from './team/worktrees';
 import { assignSkills, buildSkillPrompt, createUserSkill, discoverSkills, sanitizeAgentSkills, skillNamesFor, skillsFor } from './skills';
@@ -799,6 +800,24 @@ wss.on('connection', (ws) => {
         if (!id || !runId) return;
         playbooks.stop(id, runId);
         void broadcastSnapshot();
+      } else if (msg.type === 'playbookShare') {
+        // The three sharing messages are the only ones that reach a server
+        // other than Claude's: the Cognivio the room's own connector points
+        // at, and only because the person asked. See playbook/share.ts.
+        const pb = playbooks.get(str(msg.id) ?? '');
+        if (!pb) {
+          send(ws, { v: 1, type: 'notice', text: 'No such playbook.', isError: true });
+          return;
+        }
+        void shareCard(pb).then((r) => send(ws, { v: 1, type: 'notice', text: r.text, isError: !r.ok }));
+      } else if (msg.type === 'teamPlaybooks') {
+        const roomIds = (Array.isArray(msg.roomIds) ? msg.roomIds : []).filter((r): r is string => typeof r === 'string' && !!r).slice(0, 200);
+        void teamCards(roomIds, playbooks.list()).then((r) => send(ws, { v: 1, type: 'teamPlaybooks', ...r }));
+      } else if (msg.type === 'teamPlaybookGet') {
+        const roomId = str(msg.roomId);
+        const docId = str(msg.docId);
+        if (!roomId || !docId) return;
+        void getTeamCard(roomId, docId, new Date().toISOString()).then((r) => send(ws, { v: 1, type: 'teamPlaybookDraft', docId, ...r }));
       } else if (msg.type === 'listConnectors') {
         const roomId = str(msg.roomId);
         if (!roomId || !isAbsolutePath(roomId)) return;

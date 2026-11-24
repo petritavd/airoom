@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { PERMISSION_MODES, type ModelChoice, type PermissionMode, type Playbook, type PlaybookRun, type Robot, type Room } from '@shared/types';
+import { PERMISSION_MODES, type ModelChoice, type PermissionMode, type Playbook, type PlaybookRun, type Robot, type Room, type TeamPlaybook } from '@shared/types';
 import { Markdown } from './Markdown';
 import { PickerMenu } from './PickerMenu';
 import { ago } from './Queue';
@@ -63,6 +63,10 @@ export function PlaybookPanel({
   onDelete,
   onStop,
   onDropRule,
+  team,
+  fetchingDocId,
+  onShare,
+  onGet,
   onOpenAgent,
   onClose,
 }: {
@@ -78,6 +82,13 @@ export function PlaybookPanel({
   onDelete: (id: string) => void;
   onStop: (id: string, runId: string) => void;
   onDropRule: (id: string, ruleId: string) => void;
+  /** Sharing through Cognivio: the rooms that have its connector, and what
+   *  the team has shared for them. Both empty where nobody uses it, and then
+   *  this panel looks exactly as it did before sharing existed. */
+  team: { rooms: string[]; items: TeamPlaybook[]; error?: string };
+  fetchingDocId: string | null;
+  onShare: (id: string) => void;
+  onGet: (item: TeamPlaybook) => void;
   onOpenAgent: (sessionId: string) => void;
   onClose: () => void;
 }) {
@@ -99,6 +110,10 @@ export function PlaybookPanel({
     setModel('');
     setConfirmDelete(false);
   }, [selectedId]);
+
+  // The server left out what was here when it answered; a card saved since
+  // then is left out here, so a row goes away as soon as it has been kept.
+  const offered = team.items.filter((t) => !playbooks.some((p) => p.roomId === t.roomId && p.name.trim().toLowerCase() === t.name.trim().toLowerCase()));
 
   const live = (pb: Playbook) => pb.runs.filter((r) => r.state === 'working' || r.state === 'waiting');
   const robotOf = (r: PlaybookRun) => (r.sessionId ? robots.find((x) => x.sessionId === r.sessionId) : undefined);
@@ -156,6 +171,26 @@ export function PlaybookPanel({
               })}
             </div>
           ))}
+          {offered.length > 0 && (
+            <div className="pbp__group">
+              <div className="pbp__groupHead">From your team</div>
+              {offered.map((t) => (
+                <div key={`${t.roomId}\n${t.docId}`} className="pbp__row">
+                  <div className="pbp__rowMain pbp__rowMain--still">
+                    <span className="pbp__rowName">{t.name}</span>
+                    <span className="pbp__rowSub">
+                      {roomName(t.roomId)} · shared with {t.team}
+                      {t.updatedAt ? ` · ${ago(t.updatedAt) === 'just now' ? 'just now' : `${ago(t.updatedAt)} ago`}` : ''}
+                    </span>
+                  </div>
+                  <button className="qa" onClick={() => onGet(t)} disabled={fetchingDocId !== null} title="Read the card. Nothing is saved until you save it.">
+                    {fetchingDocId === t.docId ? 'Reading…' : 'Get'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          {team.error && team.rooms.length > 0 && <p className="pbp__hint pbp__hint--pad">Team playbooks could not be checked. {team.error}</p>}
         </div>
       </section>
     );
@@ -181,6 +216,15 @@ export function PlaybookPanel({
         </span>
         <span className="pbp__room">{roomName(pb.roomId)}</span>
         <div className="pbp__right">
+          {team.rooms.includes(pb.roomId) && (
+            <button
+              className="pbp__ico"
+              onClick={() => onShare(pb.id)}
+              title="Copy this card to your team’s Cognivio, through this room’s connector. The card only: no runs, no sessions. Share again after an edit to update it."
+            >
+              share
+            </button>
+          )}
           <button className="pbp__ico" onClick={() => onEdit(pb)} title="Edit the card">
             edit
           </button>

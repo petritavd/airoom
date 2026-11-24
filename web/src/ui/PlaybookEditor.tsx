@@ -139,7 +139,9 @@ export function PlaybookEditor({ draft, sourceTitle, models, onSave, onClose }: 
             {fresh ? 'New playbook' : 'Edit playbook'}
           </h2>
           <p className="pbe__sub">
-            {fresh
+            {fresh && !draft.source.sessionId
+              ? 'Shared by your team, and not saved yet. Read the rules and what runs without asking before you keep it; untick anything you do not want on your machine.'
+              : fresh
               ? `Read from ${sourceTitle ? `“${sourceTitle}”` : 'the session'}. Untick what only applied that time; everything ticked is the process from now on.`
               : 'Every line here is what a run is told. Change it and the next run follows the change.'}
           </p>
