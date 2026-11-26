@@ -1,0 +1,163 @@
+/* The knowledge sheet: what an agent read from and wrote to its team's
+   knowledge base. Flat colours only, like the rest of the office. */
+:root {
+  --kn: #7dd3fc; /* reading */
+  --kn-line: #24465a;
+  --kn-write: #86efac; /* writing back */
+  --kn-write-line: #24503a;
+}
+
+.ap__chip--kn {
+  cursor: pointer;
+  color: var(--kn);
+  border-color: var(--kn-line);
+  background: rgba(125, 211, 252, 0.08);
+}
+.ap__chip--kn:hover {
+  color: #e6ebf3;
+  background: rgba(125, 211, 252, 0.18);
+}
+
+.kn {
+  position: absolute;
+  inset: 24px;
+  margin: auto;
+  max-width: 720px;
+  max-height: min(860px, calc(100% - 48px));
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--px-drop);
+  z-index: 40;
+  outline: none;
+}
+.kn__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.kn__headText { flex: 1; min-width: 0; }
+.kn__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.kn__sub {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  color: var(--text-dim);
+  line-height: 1.45;
+}
+.kn__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px 18px 16px;
+}
+.kn__totals {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: var(--text-mute);
+}
+.kn__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.kn__event {
+  border: 1px solid var(--line-soft);
+  border-left: 2px solid var(--kn-line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: var(--panel-2);
+}
+.kn__event--wrote { border-left-color: var(--kn-write-line); }
+.kn__event--removed { border-left-color: var(--line); }
+.kn__eventHead {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.kn__verb {
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--kn);
+  white-space: nowrap;
+}
+.kn__verb--wrote { color: var(--kn-write); }
+.kn__verb--removed { color: var(--text-mute); }
+.kn__query {
+  font-size: 13px;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.kn__gap { flex: 1; }
+.kn__when { font-size: 11px; color: var(--text-mute); white-space: nowrap; }
+.kn__state { font-size: 11px; color: var(--warn); white-space: nowrap; }
+.kn__state--err { color: var(--err); }
+.kn__none { margin: 6px 0 0; font-size: 12.5px; color: var(--text-mute); }
+.kn__docs {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.kn__docRow {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 5px 6px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-dim);
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+}
+.kn__type {
+  flex: none;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+.kn__docTitle { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.kn__foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px 18px;
+  border-top: 1px solid var(--line);
+}
+.kn__ask { font-size: 12.5px; color: var(--text-mute); }
+.kn__btn {
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
+}
+.kn__btn:hover { border-color: var(--text-mute); }

@@ -3,6 +3,7 @@ import path from 'node:path';
 import type { AgentController, RawMcpStatus } from './agent/AgentController';
 import { readJson, writeJsonAtomic } from './jsonFile';
 import type { Connector, RoomConnectors } from '../../shared/types';
+import { isKnowledgeBase } from './knowledge/scan';
 
 /**
  * Connectors: the MCP servers a room's agents can reach, as the office shows
@@ -148,20 +149,18 @@ export function setSharedLoaded(cwd: string, name: string, loaded: boolean): str
 // ---- which shared connectors a room has turned on -----------------------------
 
 interface Adopted {
-  rooms?: Record<string, { on?: string[] }>;
+  rooms?: Record<string, { on?: string[]; knowledge?: boolean }>;
 }
 
 export function adoptedIn(cwd: string): Set<string> {
   return new Set(readJson<Adopted>(ADOPTED_FILE)?.rooms?.[cwd]?.on ?? []);
 }
 
-export function setAdopted(cwd: string, name: string, on: boolean): string | null {
-  const j = readJson<Adopted>(ADOPTED_FILE) ?? {};
+/** Write one room's choices back, dropping the room when it has none left. */
+function saveRoom(j: Adopted, cwd: string, room: { on?: string[]; knowledge?: boolean }): string | null {
   j.rooms = j.rooms ?? {};
-  const set = new Set(j.rooms[cwd]?.on ?? []);
-  if (on) set.add(name);
-  else set.delete(name);
-  if (set.size) j.rooms[cwd] = { on: [...set] };
+  const next = { ...(room.on?.length ? { on: room.on } : {}), ...(room.knowledge ? { knowledge: true } : {}) };
+  if (Object.keys(next).length) j.rooms[cwd] = next;
   else delete j.rooms[cwd];
   try {
     writeJsonAtomic(ADOPTED_FILE, j);
@@ -169,6 +168,28 @@ export function setAdopted(cwd: string, name: string, on: boolean): string | nul
   } catch (err) {
     return `Could not save the room's connectors: ${String((err as Error).message ?? err)}`;
   }
+}
+
+export function setAdopted(cwd: string, name: string, on: boolean): string | null {
+  const j = readJson<Adopted>(ADOPTED_FILE) ?? {};
+  const set = new Set(j.rooms?.[cwd]?.on ?? []);
+  if (on) set.add(name);
+  else set.delete(name);
+  return saveRoom(j, cwd, { ...j.rooms?.[cwd], on: [...set] });
+}
+
+/**
+ * The knowledge sheet's switch for a room. Off until the person turns it on,
+ * on the knowledge base's own row in the room's connections: with it off
+ * airoom reads no transcript for this and shows nothing about it.
+ */
+export function knowledgeOn(cwd: string): boolean {
+  return readJson<Adopted>(ADOPTED_FILE)?.rooms?.[cwd]?.knowledge === true;
+}
+
+export function setKnowledgeOn(cwd: string, on: boolean): string | null {
+  const j = readJson<Adopted>(ADOPTED_FILE) ?? {};
+  return saveRoom(j, cwd, { ...j.rooms?.[cwd], knowledge: on });
 }
 
 export function projectChoice(cwd: string, name: string): 'enabled' | 'disabled' | 'unset' {
@@ -310,8 +331,12 @@ export class ConnectorsService {
       extra.push({ name, scope: 'user', status: 'disabled', transport, ...(target ? { target } : {}), tools: [], onWall: false, loaded: false });
     }
     const adopted = adoptedIn(cwd);
+    const knowledge = knowledgeOn(cwd);
     return [...list, ...extra].map((c) => ({
       ...c,
+      // Only a knowledge base's row carries the switch, so a room without
+      // one never hears of the feature.
+      ...(isKnowledgeBase(c.name) ? { knowledge } : {}),
       loaded: c.status !== 'disabled',
       onWall: c.scope === 'project' || c.scope === 'local' ? c.status !== 'disabled' : adopted.has(c.name) && c.status !== 'disabled',
     }));

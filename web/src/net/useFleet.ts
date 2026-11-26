@@ -10,6 +10,7 @@ import type {
   Handoff,
   ModelChoice,
   PermissionMode,
+  KnowledgeEvent,
   Playbook,
   RoleNotes,
   RoomConnectors,
@@ -154,6 +155,9 @@ export function useFleet() {
   const [playbookDrafts, setPlaybookDrafts] = useState<
     Record<string, { loading: boolean; draft?: Playbook; error?: string }>
   >({});
+  /** What each session looked at used from its knowledge base, as last read
+   *  from its transcript. */
+  const [knowledge, setKnowledge] = useState<Record<string, KnowledgeEvent[]>>({});
   /** Each room's connectors, as last reported. */
   const [connectors, setConnectors] = useState<Record<string, RoomConnectors>>({});
   /** The newest connector tool call — the render layer's cable pulse. */
@@ -388,6 +392,8 @@ export function useFleet() {
         setPlaybooks(msg.playbooks);
       } else if (msg.type === 'playbookDraft') {
         setPlaybookDrafts((prev) => ({ ...prev, [msg.sessionId]: { loading: false, draft: msg.draft, error: msg.error } }));
+      } else if (msg.type === 'knowledge') {
+        setKnowledge((prev) => ({ ...prev, [msg.sessionId]: msg.events }));
       } else if (msg.type === 'connectors') {
         setConnectors((prev) => ({ ...prev, [msg.room.roomId]: msg.room }));
       } else if (msg.type === 'browserSettings') {
@@ -755,6 +761,10 @@ export function useFleet() {
   const dropPlaybookRule = useCallback((id: string, ruleId: string) => wsSend({ v: 1, type: 'playbookDropRule', id, ruleId }), [wsSend]);
   const stopPlaybookRun = useCallback((id: string, runId: string) => wsSend({ v: 1, type: 'playbookStop', id, runId }), [wsSend]);
 
+  // ---- knowledge ----
+  const setRoomKnowledge = useCallback((roomId: string, on: boolean) => wsSend({ v: 1, type: 'setKnowledge', roomId, on }), [wsSend]);
+  const requestKnowledge = useCallback((sessionId: string, roomId: string) => wsSend({ v: 1, type: 'knowledge', sessionId, roomId }), [wsSend]);
+
   // ---- connectors ----
   const listConnectors = useCallback(
     (roomId: string, refresh = false) => wsSend({ v: 1, type: 'listConnectors', roomId, refresh }),
@@ -802,6 +812,9 @@ export function useFleet() {
     addPlaybookRule,
     dropPlaybookRule,
     stopPlaybookRun,
+    knowledge,
+    setRoomKnowledge,
+    requestKnowledge,
     snapshot,
     conn,
     transcript,

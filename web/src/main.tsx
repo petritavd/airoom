@@ -6,6 +6,7 @@ import './chat.css';
 import './shell.css';
 import './hire.css';
 import './playbook.css';
+import './knowledge.css';
 import './connectors.css';
 
 // Inside the desktop shell, the topbar doubles as the window title bar, so it

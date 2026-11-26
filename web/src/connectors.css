@@ -159,6 +159,9 @@
 .cn__loadedLink { margin-left: 8px; }
 .cn__err { margin-top: 6px; font-size: 11.5px; color: var(--err); line-height: 1.4; }
 .cn__err--soft { color: var(--text-mute); }
+.cn__kn { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line-soft); display: flex; align-items: flex-start; gap: 12px; }
+.cn__knText { flex: 1; font-size: 11.5px; color: var(--text-dim); line-height: 1.45; }
+.cn__knText b { color: var(--text); font-weight: 600; }
 .cn__fix { margin-top: 6px; font-size: 11.5px; color: var(--text-dim); line-height: 1.45; }
 .cn__detail { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line-soft); }
 .cn__target { font-family: var(--font-mono); font-size: 11px; color: var(--text-mute); word-break: break-all; margin-bottom: 6px; }

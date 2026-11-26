@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { AgentSkills, ImageAttachment, PermissionMode, Playbook, Robot, Room } from '@shared/types';
 import { PlaybookEditor } from './ui/PlaybookEditor';
 import { PlaybookPanel } from './ui/PlaybookPanel';
+import { KnowledgeSheet, knowledgeTotals } from './ui/KnowledgeSheet';
 import { Connectors } from './ui/Connectors';
 import { useFleet, type RunState } from './net/useFleet';
 import { API_BASE } from './net/base';
@@ -162,6 +163,9 @@ export default function App() {
     addPlaybookRule,
     dropPlaybookRule,
     stopPlaybookRun,
+    knowledge,
+    setRoomKnowledge,
+    requestKnowledge,
     browserAgents,
     chromeCheck,
     setBrowserAgents,
@@ -375,6 +379,30 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playbookDrafts, draftFor, clearPlaybookDraft]);
   const reading = !!draftFor && !!playbookDrafts[draftFor.sessionId]?.loading;
+  // ---- knowledge ----
+  // What the open agent used from its team's knowledge base. The server
+  // answers with nothing, and reads nothing, unless the room's knowledge
+  // sheet has been switched on in its connections. Asked when a desk opens
+  // and again, a moment after, whenever its transcript moves: only what was
+  // appended is read, and none of it leaves the machine.
+  const [knowledgeOpen, setKnowledgeOpen] = useState(false);
+  const knSession = selected?.sessionId ?? null;
+  // The switch belongs to the project. A team member in a lane sits in a
+  // worktree of it, so its sheet follows the home room's switch.
+  const knRoom = useMemo(() => {
+    if (!selected) return null;
+    return snapshot?.rooms.find((r) => r.id === selected.roomId)?.lane?.homeRoomId ?? selected.roomId;
+  }, [snapshot, selected]);
+  // The newest step, not how many: the transcript is a sliding window, and
+  // its length stops changing once the window is full.
+  const knLatest = transcript && transcript.sessionId === knSession ? (transcript.steps[transcript.steps.length - 1]?.id ?? '') : '';
+  useEffect(() => {
+    if (!knSession || !knRoom || conn !== 'open') return;
+    const t = setTimeout(() => requestKnowledge(knSession, knRoom), knLatest ? 1200 : 0);
+    return () => clearTimeout(t);
+  }, [knSession, knRoom, knLatest, conn, requestKnowledge]);
+  useEffect(() => setKnowledgeOpen(false), [knSession]);
+  const knowledgeOf = knSession ? knowledge[knSession] : undefined;
   /** Jump to anything: ⌘K, or Ctrl+K where there is no ⌘. ⌘J opens the
    *  Needs-you list. Both stay out of text fields' way: a field that wants
    *  those keys keeps them by stopping the event. */
@@ -1061,6 +1089,23 @@ export default function App() {
         {connectedFlash && <div className="toast">✓ Claude connected — your agents are live</div>}
         {reading && <div className="toast">▤ Reading “{draftFor?.title}” into a playbook — this takes a moment…</div>}
 
+        {knowledgeOpen && selected && knRoom && knowledgeOf && (
+          <>
+            <div className="panel-backdrop" onClick={() => setKnowledgeOpen(false)} />
+            <KnowledgeSheet
+              agentName={selected.name || 'this agent'}
+              roomShort={basename(knRoom)}
+              events={knowledgeOf}
+              onTurnOff={() => {
+                setRoomKnowledge(knRoom, false);
+                setKnowledgeOpen(false);
+                setTimeout(() => requestKnowledge(selected.sessionId, knRoom), 300);
+              }}
+              onClose={() => setKnowledgeOpen(false)}
+            />
+          </>
+        )}
+
         {editor && (
           <>
             <div className="panel-backdrop" onClick={() => setEditor(null)} />
@@ -1144,6 +1189,12 @@ export default function App() {
               onRefresh={() => listConnectors(connectorsRoom.id, true)}
               onToggle={(name, enabled) => setConnectorEnabled(connectorsRoom.id, name, enabled)}
               onLoaded={(name, loaded) => setConnectorLoaded(connectorsRoom.id, name, loaded)}
+              onKnowledge={(on) => {
+                setRoomKnowledge(connectorsRoom.id, on);
+                // The open desk in that room should follow the switch now,
+                // not the next time it is opened.
+                if (selected && knRoom === connectorsRoom.id) setTimeout(() => requestKnowledge(selected.sessionId, knRoom), 300);
+              }}
               onAdd={(opts) => addConnector({ roomId: connectorsRoom.id, ...opts })}
               onRemove={(name) => removeConnector(connectorsRoom.id, name)}
               onClose={() => setConnectorsRoom(null)}
@@ -1286,6 +1337,8 @@ export default function App() {
             }}
             playbook={selected?.playbook ?? null}
             onOpenPlaybook={() => selected?.playbook && openPlaybooks(selected.playbook.id)}
+            knowledge={knowledgeOf && knowledgeOf.length ? knowledgeTotals(knowledgeOf) : null}
+            onOpenKnowledge={() => setKnowledgeOpen(true)}
             onMakePlaybook={() => {
               if (!selected) return;
               if (requestPlaybookDraft(selected.sessionId, selected.roomId)) setDraftFor({ sessionId: selected.sessionId, title: selected.title });

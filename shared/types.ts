@@ -386,6 +386,9 @@ export type ServerMessage =
   // One room's connectors (answer to 'listConnectors', and pushed whenever a
   // live run in that room reports fresher status).
   | { v: 1; type: 'connectors'; room: RoomConnectors }
+  // Answer to 'knowledge': what a session read from and wrote to its team's
+  // knowledge base, oldest first.
+  | { v: 1; type: 'knowledge'; sessionId: string; events: KnowledgeEvent[] }
   // Answer to 'playbookDraft': what airoom read out of the session, unsaved.
   | { v: 1; type: 'playbookDraft'; sessionId: string; draft?: Playbook; error?: string }
   // One browser command, sent ONLY to the socket that announced itself as the
@@ -571,6 +574,13 @@ export type ClientMessage =
   | { v: 1; type: 'playbookDropRule'; id: string; ruleId: string }
   /** Stop a run's session; the run is marked stopped. */
   | { v: 1; type: 'playbookStop'; id: string; runId: string }
+  /** Switch a room's knowledge sheet on or off. It is off until asked for. */
+  | { v: 1; type: 'setKnowledge'; roomId: string; on: boolean }
+  /** What a session used from the knowledge base. Read from its transcript;
+   *  nothing is fetched. Answered with 'knowledge', empty while the room's
+   *  sheet is off. `roomId` is the project's room: for a team's lane, its
+   *  home room, where the switch is. */
+  | { v: 1; type: 'knowledge'; sessionId: string; roomId: string }
   /** What connectors (MCP servers) agents in this room have, and their health.
    *  Cached; `refresh` asks the runtime again. Answered with 'connectors'. */
   | { v: 1; type: 'listConnectors'; roomId: string; refresh?: boolean }
@@ -631,6 +641,9 @@ export interface Connector {
    * room in its settings. Nothing is on a wall without being asked.
    */
   onWall: boolean;
+  /** Present only on a knowledge base's row: whether this room's knowledge
+   *  sheet is switched on. The row is where it is switched. */
+  knowledge?: boolean;
   /** Claude Code loads it for runs in this room (false = disabled here). */
   loaded: boolean;
 }
@@ -641,6 +654,40 @@ export interface RoomConnectors {
   checkedAt: string | null; // ISO; null until the runtime has answered once
   checking: boolean;
   error?: string;
+}
+
+// ---- Knowledge (what an agent was told, and what it wrote down) ---------------
+
+/** A document in the team's knowledge base, as a tool call named it. */
+export interface KnowledgeDoc {
+  /** Absent when the transcript only has the title (a write still in flight). */
+  id?: string;
+  title: string;
+  type?: string; // the knowledge base's own: decision, incident, lesson, …
+}
+
+/**
+ * One call a session made to its knowledge base.
+ *  primed   asked for context for a task, and was handed `docs`
+ *  searched looked something up, and found `docs` (possibly none)
+ *  read     opened `docs`
+ *  wrote    wrote `docs` (new, or an update of the same title)
+ *  removed  deleted `docs`
+ */
+export interface KnowledgeEvent {
+  id: string; // the tool call's id in the transcript
+  ts: string | null;
+  kind: 'primed' | 'searched' | 'read' | 'wrote' | 'removed';
+  /** What it asked, for primed and searched. */
+  query?: string;
+  docs: KnowledgeDoc[];
+  /** The call has no answer in the transcript yet. */
+  pending?: boolean;
+  /** The knowledge base answered with an error. */
+  failed?: boolean;
+  /** It answered, but the transcript does not hold the answer whole (Claude
+   *  Code keeps a long one in a file), so what came back cannot be listed. */
+  unlisted?: boolean;
 }
 
 // ---- Playbooks (a task that worked once, written down) -----------------------

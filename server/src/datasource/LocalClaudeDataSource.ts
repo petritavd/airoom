@@ -3,7 +3,8 @@ import os from 'node:os';
 import path from 'node:path';
 import chokidar, { type FSWatcher } from 'chokidar';
 import type { DataSource } from './DataSource';
-import type { AwayAgent, FleetSnapshot, Room, Robot, Step } from '../../../shared/types';
+import type { AwayAgent, FleetSnapshot, KnowledgeEvent, Room, Robot, Step } from '../../../shared/types';
+import { createKnowledgeScan, type KnowledgeScan } from '../knowledge/scan';
 import { createSessionParse, MAX_STEPS, RECENT_STEPS, windowSteps, type SessionParse } from '../parse/sessionParser';
 
 import { basename, isAbsolutePath, normalizePath, segments } from '../platform';
@@ -80,6 +81,25 @@ async function eachLine(
   return { offset, tail: carried ? Buffer.concat(carry, carried) : Buffer.alloc(0) };
 }
 
+/** The bytes just before `offset` (up to 64), to tell later whether the file
+ *  was appended to or rewritten. */
+async function bytesBefore(file: string, offset: number): Promise<Buffer> {
+  const n = Math.min(64, offset);
+  if (!n) return Buffer.alloc(0);
+  const fh = await fs.open(file, 'r');
+  try {
+    const buf = Buffer.alloc(n);
+    const { bytesRead } = await fh.read(buf, 0, n, offset - n);
+    return buf.subarray(0, bytesRead);
+  } finally {
+    await fh.close();
+  }
+}
+
+async function sameBytes(file: string, offset: number, before: Buffer): Promise<boolean> {
+  return (await bytesBefore(file, offset)).equals(before);
+}
+
 /**
  * Reads live Claude Code session state from this machine's ~/.claude/projects.
  * Directory layout:  <root>/<encoded-project>/<sessionId>.jsonl
@@ -100,6 +120,8 @@ export class LocalClaudeDataSource implements DataSource {
   private cache = new Map<string, CacheEntry>();
   /** The few chats open in the UI, every step kept, least recent first. */
   private chats = new Map<string, { size: number; mtimeMs: number; live: LiveParse }>();
+  /** Knowledge scans of the sessions looked at last, and where each stopped. */
+  private knowledge = new Map<string, { size: number; mtimeMs: number; offset: number; before: Buffer; scan: KnowledgeScan }>();
   /** Reads under way: asked twice at once, a file is still read once. */
   private reading = new Map<string, Promise<unknown>>();
   /** How much reading the transcripts has cost. For tests and for /health. */
@@ -602,6 +624,41 @@ export class LocalClaudeDataSource implements DataSource {
       return windowSteps(steps, limit);
     } catch {
       return { steps: [], hasMore: false };
+    }
+  }
+
+  /**
+   * What a session used from its knowledge base. The scan is kept with where
+   * it stopped, so an open sheet following a working session reads only what
+   * was appended. A file that shrank, or whose bytes before the stopping
+   * point changed, was rewritten (`/compact` does that) and is read again
+   * from the top.
+   */
+  async getKnowledge(sessionId: string): Promise<KnowledgeEvent[]> {
+    const files = await this.listSessionFiles();
+    const match = files.find((f) => path.basename(f, '.jsonl') === sessionId);
+    if (!match) return [];
+    try {
+      return await this.once(`knowledge ${match}`, async () => {
+        const stat = await fs.stat(match);
+        let hit = this.knowledge.get(match);
+        this.knowledge.delete(match); // most recent last
+        if (hit && hit.size === stat.size && hit.mtimeMs === stat.mtimeMs) {
+          this.knowledge.set(match, hit);
+          return hit.scan.events();
+        }
+        if (hit && (stat.size < hit.offset || !(await sameBytes(match, hit.offset, hit.before)))) hit = undefined;
+        const scan = hit?.scan ?? createKnowledgeScan();
+        const from = hit?.offset ?? 0;
+        const { offset } = await eachLine(match, from, (line) => scan.line(line));
+        // A last line with no newline yet is left for the next read, when it
+        // is whole: scanning it now would count a call that is half written.
+        this.knowledge.set(match, { size: stat.size, mtimeMs: stat.mtimeMs, offset, before: await bytesBefore(match, offset), scan });
+        if (this.knowledge.size > OPEN_CHATS) this.knowledge.delete(this.knowledge.keys().next().value as string);
+        return scan.events();
+      });
+    } catch {
+      return [];
     }
   }
 

@@ -24,7 +24,8 @@ import { FALLBACK_MODELS } from '../../shared/types';
 import { releaseState, startReleaseChecks } from './release';
 import { TeamController } from './team/TeamController';
 import { PlaybookController } from './playbook/PlaybookController';
-import { addProjectServer, ConnectorsService, removeProjectServer, setAdopted, setProjectChoice, setSharedLoaded, sharedLoaded } from './connectors';
+import { sessionKnowledge } from './knowledge/session';
+import { addProjectServer, ConnectorsService, removeProjectServer, setAdopted, setKnowledgeOn, setProjectChoice, setSharedLoaded, sharedLoaded } from './connectors';
 import { gitFacts } from './team/worktrees';
 import { assignSkills, buildSkillPrompt, createUserSkill, discoverSkills, sanitizeAgentSkills, skillNamesFor, skillsFor } from './skills';
 import { agentNameFor, setAgentName } from './agentNames';
@@ -799,6 +800,19 @@ wss.on('connection', (ws) => {
         if (!id || !runId) return;
         playbooks.stop(id, runId);
         void broadcastSnapshot();
+      } else if (msg.type === 'knowledge') {
+        // Read from the transcript on disk, and only for a room whose
+        // knowledge sheet is switched on. Nothing is fetched for this.
+        const sessionId = str(msg.sessionId);
+        const roomId = str(msg.roomId);
+        if (!sessionId || !roomId) return;
+        send(ws, { v: 1, type: 'knowledge', sessionId, events: await sessionKnowledge(source, sessionId, roomId) });
+      } else if (msg.type === 'setKnowledge') {
+        const roomId = str(msg.roomId);
+        if (!roomId || !isAbsolutePath(roomId)) return;
+        const err = setKnowledgeOn(roomId, msg.on === true);
+        if (err) send(ws, { v: 1, type: 'notice', text: err, isError: true });
+        connectors.reannotate(roomId);
       } else if (msg.type === 'listConnectors') {
         const roomId = str(msg.roomId);
         if (!roomId || !isAbsolutePath(roomId)) return;

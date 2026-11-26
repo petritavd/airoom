@@ -44,10 +44,13 @@ function Row({
   roomShort,
   onToggle,
   onLoaded,
+  onKnowledge,
   onRemove,
 }: {
   c: Connector;
   roomShort: string;
+  /** a knowledge base's row only: the room's knowledge sheet, on or off */
+  onKnowledge?: (on: boolean) => void;
   /** the per-room switch: project approval, or on/off the wall for a shared one */
   onToggle?: (enabled: boolean) => void;
   /** shared only: stop or resume Claude Code loading it for this project */
@@ -94,6 +97,22 @@ function Row({
           <button className="cn__link cn__loadedLink" onClick={() => onLoaded(true)}>
             Load it again
           </button>
+        </div>
+      )}
+      {onKnowledge && c.knowledge !== undefined && (
+        // Opt-in, and only offered where there is a knowledge base to read
+        // from. Off, airoom does nothing with it at all.
+        <div className="cn__kn">
+          <div className="cn__knText">
+            <b>Knowledge sheet</b> · {c.knowledge ? 'on' : 'off'}
+            <br />
+            Show on each desk in {roomShort} what its agent read from this knowledge base and wrote to it. The list comes from the session transcripts on
+            this machine. Nothing is fetched or sent.
+          </div>
+          <label className="cn__switch" title={c.knowledge ? `Turn the knowledge sheet off for ${roomShort}` : `Turn the knowledge sheet on for ${roomShort}`}>
+            <input type="checkbox" checked={c.knowledge} onChange={(e) => onKnowledge(e.target.checked)} aria-label="Knowledge sheet" />
+            <span className={`cn__sw ${c.knowledge ? 'cn__sw--on' : ''}`} />
+          </label>
         </div>
       )}
       {c.error && <div className={`cn__err ${c.status === 'disabled' ? 'cn__err--soft' : ''}`}>{c.error}</div>}
@@ -157,6 +176,7 @@ export function Connectors({
   onRefresh,
   onToggle,
   onLoaded,
+  onKnowledge,
   onAdd,
   onRemove,
   onClose,
@@ -168,6 +188,8 @@ export function Connectors({
   onRefresh: () => void;
   onToggle: (name: string, enabled: boolean) => void;
   onLoaded: (name: string, loaded: boolean) => void;
+  /** Switch this room's knowledge sheet on or off. */
+  onKnowledge: (on: boolean) => void;
   onAdd: (opts: { name: string; transport: 'stdio' | 'http' | 'sse'; command?: string; args?: string[]; url?: string; env?: Record<string, string>; headers?: Record<string, string> }) => void;
   onRemove: (name: string) => void;
   onClose: () => void;
@@ -254,6 +276,7 @@ export function Connectors({
               c={c}
               roomShort={roomShort}
               onToggle={c.scope === 'project' ? (en) => onToggle(c.name, en) : undefined}
+              onKnowledge={onKnowledge}
               onRemove={c.scope === 'project' ? () => onRemove(c.name) : undefined}
             />
           ))}
@@ -318,6 +341,7 @@ export function Connectors({
               roomShort={roomShort}
               onToggle={c.status === 'disabled' ? undefined : (en) => onToggle(c.name, en)}
               onLoaded={c.scope === 'user' || c.scope === 'claudeai' ? (l) => onLoaded(c.name, l) : undefined}
+              onKnowledge={onKnowledge}
             />
           ))}
           {shared.length > 0 && (

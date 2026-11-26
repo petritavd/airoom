@@ -57,6 +57,11 @@ interface Props {
   /** This agent is a playbook run: which card, and the way to it. */
   playbook?: { id: string; runId: string; name: string } | null;
   onOpenPlaybook?: () => void;
+  /** What this session used from its team's knowledge base: distinct
+   *  documents it was given, and written. Null when it used none, and then
+   *  the panel shows nothing about it. */
+  knowledge?: { given: number; wrote: number; unlisted: number } | null;
+  onOpenKnowledge?: () => void;
   /** "Make this a playbook" — read this session into a card. */
   onMakePlaybook?: () => void;
   /** A correction the human chose to keep for future runs of the playbook. */
@@ -547,6 +552,8 @@ export function AgentPanel({
   onOpenTeam,
   playbook,
   onOpenPlaybook,
+  knowledge,
+  onOpenKnowledge,
   onMakePlaybook,
   onRemember,
   onLetGo,
@@ -1043,6 +1050,10 @@ export function AgentPanel({
       // as long as an approval sat there.
       const el = document.activeElement as HTMLElement | null;
       if (el && (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT' || el.isContentEditable)) return;
+      // A sheet open over the panel owns the keyboard. Its Enter presses the
+      // button in focus there, and must not also allow a tool call the person
+      // is not looking at.
+      if (document.querySelector('[role="dialog"][aria-modal="true"]:not(.ap)')) return;
       e.preventDefault();
       e.stopPropagation();
       onPermission(pending.requestId, e.key === 'Enter');
@@ -1305,6 +1316,17 @@ export function AgentPanel({
         {robot && playbook && onOpenPlaybook && (
           <button type="button" className="ap__chip ap__chip--pb" onClick={onOpenPlaybook} title="Open the playbook this run follows">
             ▤ {playbook.name} ▸
+          </button>
+        )}
+        {robot && knowledge && onOpenKnowledge && (
+          <button
+            type="button"
+            className="ap__chip ap__chip--kn"
+            onClick={onOpenKnowledge}
+            title={`Knowledge: this agent was given ${knowledge.unlisted ? 'at least ' : ''}${knowledge.given} ${knowledge.given === 1 ? 'document' : 'documents'} from the team’s knowledge base in this session${knowledge.wrote ? ` and wrote ${knowledge.wrote}` : ''}. Open the list.`}
+            aria-label="Knowledge this agent used"
+          >
+            kb {knowledge.given}{knowledge.unlisted ? '+' : ''}{knowledge.wrote ? ` +${knowledge.wrote}` : ''} ▸
           </button>
         )}
         <span className="ap__gap" />

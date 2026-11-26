@@ -187,6 +187,39 @@ it keeps its own, so the terminal sees exactly what the office does. Status come
 Sign-in for a connector that needs it happens in Claude Code (`/mcp`).
 `server/src/connectors.ts` holds it all; `scripts/connectors-test.ts` proves it.
 
+## Knowledge (what an agent was told)
+
+An agent with a [Cognivio](https://github.com/Elbani/cognivio) connector asks
+its team's knowledge base for context before it works, and writes back what it
+learned. In the chat those calls are single lines among hundreds. With the
+knowledge sheet switched on for a room, a session that has made any gets a
+chip on its panel, `kb 6 +1`: six documents given, one written. The chip opens
+the same calls on their own, oldest first: what it asked, which documents came
+back, what it read, what it wrote. When an agent does something you did not
+expect, "what was it told?" is answered where you are already looking.
+
+- **It is off until you turn it on, per room.** The switch is on the Cognivio
+  connector's own row in the room's Connections, so a room without that
+  connector never sees it. Off, airoom reads no transcript for this and shows
+  nothing, even if a client asks. The sheet has its own "Turn it off", for a
+  room whose connector has since been removed. A team's lanes follow their
+  project's switch. The choice is kept in `~/.airoom/connectors.json`.
+- **All of it is read from disk.** The list comes from the session's
+  transcript, the raw records rather than the chat's steps, because a step
+  keeps four thousand characters of a tool's output and a list of documents is
+  longer. Only lines that name a Cognivio tool, or answer one, are parsed. A
+  session still being written is followed from where the last read stopped. A
+  session that never used the knowledge base shows no chip, sheet on or not.
+- **Nothing is fetched and nothing is sent.** The sheet shows titles, not
+  text. It does not read the connector's address or its key, and makes no
+  request. An answer too long for Claude Code to keep in the transcript is
+  listed as such, and the chip reads `kb 4+`.
+- **A connector counts as Cognivio by its name:** any name with `cognivio` in
+  it, in any case.
+
+`server/src/knowledge/` holds it: `scan.ts` reads the transcript, `session.ts`
+keeps it behind the switch. `scripts/knowledge-test.ts` proves both.
+
 ## The browser pane (a page your agents can drive)
 
 The desktop app's rail has a globe. It puts a real browser on the stage, in
@@ -306,6 +339,7 @@ server/src/datasource/               DataSource (read seam); LocalClaudeDataSour
 server/src/parse/sessionParser.ts    JSONL → session model, one record at a time
 server/src/agent/                    AgentController (write seam); SdkClaudeController (Agent SDK),
                                      claudeBin (finding claude)
+server/src/knowledge/                what a session read from and wrote to its team's knowledge base
 server/src/team/                     TeamController + worktrees: a lead, a crew, one lane each
 server/src/browser/                  the browser pane's server half: relay to the shell, site policy, tools
 server/src/release.ts                the version check

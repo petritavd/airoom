@@ -1,4 +1,4 @@
-import type { FleetSnapshot, Step } from '../../../shared/types';
+import type { FleetSnapshot, KnowledgeEvent, Step } from '../../../shared/types';
 
 /**
  * The seam that makes airoom scalable.
@@ -15,6 +15,10 @@ export interface DataSource {
 
   /** Fuller activity feed for one robot (the detail panel calls this). */
   getTranscript(sessionId: string, limit?: number): Promise<{ steps: Step[]; hasMore: boolean }>;
+
+  /** What one session read from and wrote to its team's knowledge base,
+   *  oldest first. Optional: a source that cannot tell answers nothing. */
+  getKnowledge?(sessionId: string): Promise<KnowledgeEvent[]>;
 
   /**
    * Register a project directory as a room, even before it has any sessions.
